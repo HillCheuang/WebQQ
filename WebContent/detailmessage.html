@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>详细信息</title>
+		<link rel="stylesheet" href="css/detailmessage.css" />
+	</head>
+	<body>
+		<div id="content" >
+			
+			<div id="center">
+				
+				<form > 
+					<div id="headinput">
+						<img   :src="headphoto" id="img"  >
+					<input type="file" name="headphoto" title=" " id="headphoto" style="margin-left: 65px;margin-top: 10px; width: 100px; color: transparent; border-bottom:none; "/>
+					
+					</div>
+						
+						
+				<div id="mesg">
+					账号&nbsp;&nbsp; &nbsp; &nbsp; <input type="text" v-model="qqinfo.qq"  name="qq" id="qq" readonly="readonly" />
+					&nbsp;&nbsp; &nbsp; &nbsp; <span>签名</span>
+					<br />
+						
+						昵称&nbsp;&nbsp; &nbsp; &nbsp;  <input type="text" v-model="qqinfo.nickname"  name="nickname" id="nickname" />
+				
+				&nbsp;&nbsp; &nbsp; &nbsp; <input type="text" v-model="qqinfo.signature"  name="signature"  id="signature" /><br />
+				
+				性别&nbsp;&nbsp; &nbsp; &nbsp; <input type="radio" v-model="sex"  name="sex" id="sex" value="男" />男
+				&nbsp;&nbsp;&nbsp;
+				<input type="radio" v-model="sex"  name="sex" id="sex" value="女"  />女
+			&nbsp;&nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; 
+			血型&nbsp;&nbsp; &nbsp; <input type="radio" v-model="bloodType" name="blood" id="A" value="A" />A型
+			<input type="radio" v-model="bloodType" name="blood" id="B" value="B" />B型
+			<input type="radio" v-model="bloodType" name="blood" id="qita" value="qita" />其他
+			<br />
+				邮箱&nbsp;&nbsp; &nbsp; &nbsp; <input type="email" v-model="qqinfo.email"  name="email" id="email" />
+			&nbsp;&nbsp; &nbsp; &nbsp; 	手机&nbsp;&nbsp; &nbsp; &nbsp; <input type="text" v-model="qqinfo.phonenum"  name="phone" id="phone" />{{qqinfo.phone}}
+				<br />
+				公司&nbsp;&nbsp; &nbsp; &nbsp; <input type="text" v-model="qqinfo.company"  name="company" id="company" />{{qqinfo.company}}
+				&nbsp;&nbsp; &nbsp; &nbsp; 职业&nbsp;&nbsp; &nbsp; &nbsp; <input type="text" v-model="qqinfo.job"  name="job" id="job" />{{qqinfo.job}} 
+				<br />
+				地址&nbsp;&nbsp; &nbsp; &nbsp; <input type="text"  v-model="qqinfo.addr" name="addr" id="addr" />{{qqinfo.addr}}
+				&nbsp;&nbsp; &nbsp; &nbsp; 家乡&nbsp;&nbsp; &nbsp; &nbsp; <input type="text" v-model="qqinfo.home" name="home" id="home" />{{qqinfo.home}}
+				</div>
+				<input type="button" value="保存" id="sub" @click="modifyQQinfo" />
+		</form>
+			</div>
+		</div>
+		
+<script src='js/jquery-1.9.1.js'></script>
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/ajaxfileupload.js"></script>
+<script type="text/javascript" src="js/axios.js"></script>
+<script type="text/javascript">
+var vm=new Vue({
+	el:'#content',
+	data:{
+		qqinfo:{},
+		onlogin:false,
+		outlogin:true,
+		qq:'',
+		headphoto:'',
+		nickname:'',
+		signature:'',
+		sex:'',
+		bloodType:'',
+		email:'',
+		phone:'',
+		job:'',
+		company:'',
+		addr:'',
+		home:'',
+		qstatus:''
+	},
+	methods:{
+		
+		modifyQQinfo:function(){
+			var _this=this;
+			$.ajaxFileUpload(
+	                {
+	                    url: 'QQFileUpload.action', //用于文件上传的服务器端请求地址
+	                    secureuri: false, //是否需要安全协议，一般设置为false
+	                    fileElementId: 'headphoto', //文件上传域的ID
+	                    dataType: 'json', //返回值类型 一般设置为json
+	                    success: function (data)  //服务器成功响应处理函数
+	                    {	
+	                    	if(data){
+	                    		_this.headphoto=data.headphoto;
+	                    	}
+	                    	if(_this.headphoto==null){
+								alert("请选择图片");
+								return;
+							}else{
+								//发送ajax请求
+								axios({
+									url:'qqinfo.action',
+									method:'post',
+									params:{op:'changeDetail',qq:_this.qq,headphoto:_this.headphoto,pwd:_this.qqinfo.pwd,nickname:_this.nickname,signature:_this.signature,bloodType:_this.bloodType,sex:_this.sex,email:_this.email,phone:_this.phone,
+										job:_this.job,company:_this.company,addr:_this.addr,home:_this.home,qstatus:_this.qstatus}
+								}).then(result=>{
+									if(result.data==0){
+										alert('修改失败');
+									}else{
+										alert('修改成功');
+										parent.location.reload();
+									}
+									});
+							}
+	                    }
+	                });
+			
+			
+		}
+	},
+	mounted:function(){
+		axios.all([checkLogin(),getDetailInfo()])
+		.then(axios.spread((fn1,fn2)=>{
+			if(fn2.data){
+				
+			this.qqinfo = fn2.data;
+			this.qstatus=fn2.data.qstatus;
+			this.qq=fn2.data.qq;
+			this.headphoto=fn2.data.headphoto;
+			this.sex=fn2.data.sex;
+			if(fn2.data.bloodType!='A'||fn2.data.bloodType!='B'){
+				this.bloodType='qita';
+			}
+			
+			
+		 
+			}
+			if(fn1.data){//用户登录
+			this.onlogin=true;
+			this.outlogin=false;
+			this.nickname=fn1.data.nickname;
+			this.sex=fn1.data.sex;
+		
+			this.nickname=fn1.data.nickname;
+		}
+	}));
+}});
+
+//检查是否登录
+function checkLogin(){
+	return axios.get('qqinfo.action?op=check');
+}
+//获取详细信息
+function getDetailInfo(){
+	return axios({
+		url:'qqinfo.action?op=showDetail',
+	    method:'get',
+	    params:{}
+	});
+}
+
+<!-- 上传图片并预览的js文件 end -->
+var img = document.querySelector('input[name=headphoto]');
+imgs = document.querySelector('#img');
+if(img){
+    img.addEventListener('change', function() {
+        var file = this.files[0];
+        var reader = new FileReader();
+        // 监听reader对象的的onload事件，当图片加载完成时，把base64编码賦值给预览图片
+        reader.addEventListener("load", function() {
+            imgs.src = reader.result;
+        }, false);
+        // 调用reader.readAsDataURL()方法，把图片转成base64
+        reader.readAsDataURL(file);
+        $("#img").eq(1).css("display", "block");
+    }, false);
+}
+
+</script>
+	</body>
+</html>

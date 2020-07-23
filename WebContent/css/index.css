@@ -1,0 +1,57 @@
+/*
+	Author: Wang https://blog.csdn.net/q475254344
+	Last Modified: 2018/5/15
+*/
+*{
+    padding: 0px;
+    margin: 0px;
+}
+li {
+    list-style: none;
+}
+input {
+    border-radius: 5px;
+}
+.leftbar ul {
+    padding: 0px;
+}
+.leftbar li {
+    padding: 10px;
+}
+.leftbar {
+    background-color: #212e3e;
+    width: 5%;
+    height: 100%;
+    color:grey;
+    padding: 0px;
+    text-align: center;
+    position: absolute;
+    line-height: 40px;
+    font-size: 20px;
+}
+.container {
+    height: 100%;
+    width: 95%;
+    float:right;
+/*    background:  linear-gradient(#1f94bf 20%,#edf5f8 0, #edf5f8 80%, #1f94bf 0);*/
+    display: flex;
+    margin: 0;
+}
+.leftbar li i:hover{
+	font-size: 30px;
+}
+/* 消息红点 */
+.redpoint{
+  display:inline-block;
+  height:16px;
+  width:16px;
+  line-height:16px;
+  text-align:center;
+  font-size:0.1em;
+  border-radius:16px;
+  color:#fff;
+  background:red;
+  position: relative;
+  top: -8px;
+  right: 8px;
+}

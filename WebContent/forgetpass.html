@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html >
+<head>
+	
+  <meta charset="UTF-8">
+  <title>找回密码</title>
+      <link rel="stylesheet" href="css/mode.css">
+<link rel="stylesheet" href="css/forget.css" />
+  <link rel="stylesheet" href="css/unlock.css" />
+<link rel="stylesheet" href="css/reset.css" />
+<link rel="stylesheet" href="css/headfoot.css" />
+<style>
+	html{
+		background: #edf5f8;
+	}
+	
+</style>
+</head>
+
+<body>
+	<div id="header" >
+			<div id="header_right" >
+				<a href="#">基本版</a>
+				<span>|</span>
+				<a href="#">English</a>
+				<span>|</span>
+				<a href="#">手机版</a>
+				<span>|</span>
+				<a href="#">企业邮箱</a>
+								
+				
+			</div>
+		</div>
+    <div class="container">
+    <div class="wrapper">
+      <ul class="steps">
+        <li class="is-active" >填写账号</li>
+        <li >身份验证</li>
+				<li >设置新密码</li>
+				<li >完成</li>
+      </ul>
+      
+			
+			<div id="app">
+			
+      <form class="form-wrapper">
+      	
+        <fieldset class="section is-active">
+        	<br />
+          <input type="text" name="qq" id="qq" placeholder="请输入账号"  style="margin-left: 80px; width: 280px; margin-top: 30px; margin-bottom: 20px;">
+          
+          <li class="row" style="list-style: none;">
+          	
+           <!-- 滑块验证-->
+          <div class="bar3 bar" style="position: relative;margin-left: 80px; ">
+          	<!-- <div class="slide-to-unlock-bg" style="width: 300px; height: 38px; background-color: rgb(232, 232, 232);">
+          		<span style="line-height: 38px; font-size: 10.8571px; color: rgb(0, 0, 0);">滑动拖快验证</span>
+          	</div>
+          	<div class="slide-to-unlock-progress" style="background-color: rgb(255, 233, 127); height: 36px; width: 0px;"></div>
+          	<div class="slide-to-unlock-handle" style="background-color: rgb(255, 255, 255); height: 38px; line-height: 38px; width: 61px; left: 0px;"></div> -->
+          </div>
+          </li>
+          <div class="button" id="fbutton" onclick=checkQQ(this)>下一步</div>
+        </fieldset>
+        
+        
+        <fieldset class="section">
+          <div class="option"  style="margin-left: 80px;  margin-top: 50px; margin-bottom: 20px;">
+                        	<select type="text" id="question" name="question" >
+                          <option style="background-color: white;" >请选择密保问题</option> 			
+													<option style="background-color: white;" value="您母亲的名字？">您母亲的名字？</option>
+													<option style="background-color: white;" value="您母亲的生日？">您母亲的生日？</option>
+													<option style="background-color: white;" value="您父亲的名字？">您父亲的名字？</option>
+                              </select>
+                        </div>
+                        	  
+                      	<li>
+                            <input type="text" id="answer" name="answer" placeholder="请输入密保答案"  style="margin-left: 80px; width: 280px; margin-top: 40px; margin-bottom: 20px;">
+                       	</li>
+          <div class="button" id="questionbutton" onclick="checkQusetion(this)">下一步</div>
+        </fieldset>
+        
+        
+        
+        <fieldset class="section">
+          <h3>设置新密码<h3>
+          <input type="password" name="password" id="password" placeholder="请设置新密码"  style="margin-left: 80px; width: 280px; margin-top: 30px; margin-bottom: 20px;">
+          <input type="password" name="password2" id="password2" placeholder="再次输入新密码"  style="margin-left: 80px; width: 280px; margin-top: 30px; margin-bottom: 20px;">
+          <input class="submit button" type="submit" value="提交" onclick="changePWD(this)">
+        </fieldset>
+        
+        
+        
+        <fieldset class="section">
+          <p id = "afterchange" style="font-size: 22px; margin-top: 50px; margin-bottom: 30px;">密码设置成功！</p>
+          <a href="login.html" style="color: cornflowerblue; margin-top: 30px;">点击登录</a>
+          <div class="button" onclick="returnIndex()">完成</div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+	</div>
+		<script src='js/jquery-3.4.1.min.js'></script>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/axios.js" type="text/javascript" charset="utf-8"></script>
+		
+			<script type="text/javascript">
+			var flag=true;
+			var question ='';
+			var answer ='';
+			function checkQQ(event){
+				 qqNumber = $('#qq').val();
+				 if(qqNumber===null||qqNumber===''){
+					 alert('账号不能为空！！');
+					 return;
+				 }
+				axios.get("foget.action?op=forgetpass&qq="+qqNumber).then((fn1)=>{
+					if(fn1.data!=null){
+						question = fn1.data.question;
+						answer = fn1.data.answer;
+						flag=true;
+						console.log(event);
+						doNext(event);
+					}else{
+					    alert('账号不存在');
+					}
+					
+					
+				});
+				
+			}
+			
+			function checkQusetion(e){
+				 inputQuestion = $('#question').val();
+				 inputAnswer =$('#answer').val();
+				 if(inputQuestion===null||inputQuestion==='' || inputAnswer===null||inputAnswer===''){
+					 alert('密保问题或密保答案不能为空！！');
+					 return;
+				 }
+				 if(question===inputQuestion&&inputAnswer===answer){
+					 doNext(e);
+				 }else{
+					 alert('密保问题或密保答案错误！！');
+					 return;
+				 }
+			}
+			
+			//修改密码
+			function changePWD(e){
+				 newpassword = $('#password').val();
+				 enterpassword = $('#password2').val();
+				
+				if(newpassword==enterpassword){
+					 var pat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{6,14}$/;
+					 if(!enterpassword){
+						 alert('密码不能为空！！！');
+						 return;
+					 }else if(!pat.test(enterpassword)){
+						 alert('密码至少包含小写字母、大写字母和数字且长度不能低于六位');
+						 return;
+					 }
+						axios.get("foget.action?op=changePWD&qq="+qqNumber+'&pwd='+newpassword).then((fn1)=>{
+						if(fn1.data==0){
+							$('#afterchange').html('设置密码失败，请重新再试');
+						}else{
+							doNext(e);
+							$('#afterchange').html('修改密码成功！');
+						}
+					});
+				}else{
+					alert('密码不一致')
+				}
+				
+			}
+			
+			
+			
+		//修改密码成功后跳转首页
+			function returnIndex(){
+				var tishi =$('#afterchange').text();
+				console.log(tishi);
+				if(tishi=='修改密码成功！'){
+					window.location.href='index.html';
+				}
+			}
+		
+		function doNext(event){
+			    var button = $(event);
+			    var currentSection = button.parents(".section");
+			    var currentSectionIndex = currentSection.index();
+			    var headerSection = $('.steps li').eq(currentSectionIndex);
+			    currentSection.removeClass("is-active").next().addClass("is-active");
+			    headerSection.removeClass("is-active").next().addClass("is-active");
+
+			    $(".form-wrapper").submit(function(e) {
+			      e.preventDefault();
+			    });
+
+			    if(currentSectionIndex === 3){
+			      $(document).find(".form-wrapper .section").first().addClass("is-active");
+			      $(document).find(".steps li").first().addClass("is-active");
+			    }
+		}
+		</script>  
+		
+</body>
+</html>

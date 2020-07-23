@@ -1,0 +1,493 @@
+<link rel="stylesheet" type="text/css" href="css/findFriends.css" />
+
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+	integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+	crossorigin="anonymous">
+<div class="findFriendsbox" id="app">
+
+
+
+	<div id="showInfo" class="showInfo">
+		<div id="SI_top">
+			<i><a style="text-decoration: none; font-size: 20px;"
+				@click="close">×</a></i>
+			<div id="headphtot" class="headphtot">
+				<img id="img" :src="friendsinfo.headphoto" /><span id="name">{{friendsinfo.nickname}}</span>
+			</div>
+
+		</div>
+		<div id="SI_center">
+			<span class="xingxi" id="" style="color: black; font-weight: 1000;">{{friendsinfo.nickname}}</span>
+			<span class="xingxi" id="">email: &nbsp&nbsp<span>{{friendsinfo.email}}</span></span>
+			<span class="xingxi" id="">电话：&nbsp&nbsp&nbsp<span>{{friendsinfo.phonenum}}</span></span>
+			<span class="xingxi" id="" style="color: black; font-weight: 1000;">qq:&nbsp&nbsp&nbsp<span>{{friendsinfo.qq}}</span></span>
+			<span class="xingxi" id="">性别：&nbsp&nbsp&nbsp<span>{{friendsinfo.sex}}</span></span>
+			<span class="xingxi" id="">血型： &nbsp&nbsp&nbsp<span>{{friendsinfo.bloodType}}</span></span>
+			<span class="xingxi" id="">工作: &nbsp&nbsp&nbsp<span>{{friendsinfo.job}}</span></span>
+			<span class="xingxi" id="">地址: &nbsp&nbsp&nbsp<span>{{friendsinfo.addr}}</span></span>
+			<span class="xingxi" id="">家乡: &nbsp&nbsp&nbsp<span>{{friendsinfo.hometown}}</span></span>
+		</div>
+		<div id="SI_footer">
+			<button id="butt" @click="addFriends(friendsinfo.qq)">添加好友</button>
+		</div>
+	</div>
+	<div class="top">
+		<li id="findFriends_li"><i class="fas fa-user" @click="showFindFriends($event)"> 找人</i></li>
+		<li id="findGroups_li" style="background:#C0C0C0;"><i class="fas fa-users" @click="showFindGroup($event)"> 找群</i></li>
+	</div>
+	<div id="findGroup" style="display: none;">
+		<div class="center">
+
+			<div id="creatGroup" class="modifybox"
+				style="display: none; height: 250px;">
+				<input class="box_input" type="text" v-model="gname"
+					placeholder="请输入群名称" id='gname'>
+				<div id="head" style="margin-top: 50px;">
+					<li><input type="file" name="goupheadphoto" id="goupheadphoto" /></li> <img
+						id="img1" src="" width="100px" height="100px"
+						style="border-radius: 100px; vertical-align: middle;">
+				</div>
+				<button class="box_but1" @click="cancleCreatGroup">取消</button>
+				<button class="box_but2" @click="agreeCreatGroup">确定</button>
+			</div>
+			<div class="left">
+				<form class="layui-form layui-form-pane" action="javascript:;">
+					<input type="text" name="group" id="qq" v-model="gno"
+						placeholder="请输入群号码或群名称" style="margin-top: 70px;" />
+				</form>
+			</div>
+			<div class="right">
+				<button id="but" @click="findGroup" style="margin-left: 80px;">查询</button>
+				<button id="but" @click="createGroup"
+					style="float: right; margin-left: 0px; margin-right: 100px;">创建群聊</button>
+			</div>
+		</div>
+		<div class="footer">
+			<ul>
+				<li v-for="group in groups"><img
+					style="border-radius: 100px; vertical-align: middle; width: 75px; height: 75px;"
+					:src="group.goupheadphoto"  @click="ShowJoinGroup(group)"> <span style="margin-left: 10px;">{{group.gname}}</span>
+					<div :id='group.gno' class="modifybox">
+						<span class="box_input" style="">是否加入 {{group.gname}} </span>
+						<button class="box_but2" @click="agreeJoinGroup(group.gno)">添加</button>
+					</div></li>
+
+			</ul>
+
+		</div>
+	</div>
+	<div id="findFriends">
+
+		<div class="center">
+			<div class="left">
+				<form class="layui-form layui-form-pane" action="javascript:;">
+					<input  type="text" name="fqq" id="fqq" v-model="fqq" value="" 
+						placeholder="请输入QQ号码" style="margin-right: 0px;height:40px;margin-left: 100px;" /> <i class="fas fa-home"></i> <select
+						id="prov" name="prov" onchange="showCity(this)"
+						style="width: 120px; height: 30px;">
+						<option>请选择省份</option>
+					</select>
+					<!-- 城市选择 -->
+					<select id="city" onchange="showCountry(this)"
+						style="width: 120px; height: 30px; display: none;">
+						<option>请选择城市</option>
+					</select>
+					<!-- 区县选择 -->
+					<select id="country" onchange="selectCountry(this)"
+						style="width: 120px; height: 30px; display: none;">
+						<option>请选择县区</option>
+					</select> <i class="fas fa-venus-mars"></i> <select id="sex" v-model="sex"
+						style="width: 120px; height: 30px;">
+
+						<option value="volvo">性别：</option>
+						<option value="男">男</option>
+						<option value="女">女</option>
+					</select>
+				</form>
+			</div>
+			<div class="right">
+				<button id="but" @click="find">查询</button>
+			</div>
+		</div>
+		<div class="footer">
+			<ul>
+				<li v-for="qqinfo in qqInfos" v-if=""><img
+					style="border-radius: 100px; vertical-align: middle; width: 75px; height: 75px;"
+					:src="qqinfo.headphoto" @click="ShowInfo(qqinfo)"> <span
+					style="margin-left: 10px;">{{qqinfo.nickname}}</span></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<script src='js/jquery-1.9.1.js'></script>
+<script src="js/province.js"></script>
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/ajaxfileupload.js"></script>
+<script type="text/javascript" src="js/axios.js"></script>
+<script>
+	var vm= new Vue({
+		el:'#app',
+		data:{
+			//查找群号
+			gno:'',
+			//创建群名称
+			gname:'',
+			//查找到的群
+			groups:{},
+			//群头像
+			goupheadphoto:'',
+			qq:'',
+			fqq:'',
+			isonline:false,
+			addr:'',
+			sex:'',
+			qstatsu:0,
+			qqInfos:{},
+			friendsinfo:{}
+		},
+		methods:{
+			showFindGroup:function(event){
+				$("#findFriends_li").css('background','#C0C0C0');
+				$("#findGroups_li").css('background','gainsboro');
+				$("#findFriends").css('display','none');
+				$("#findGroup").css('display','block');
+				//发送请求
+				
+			},
+				//取消加入该群
+				cancelJoinGroup:function(g){
+				$('#'+g.gno).css('display','none');
+				},
+			
+				ShowJoinGroup:function(g){
+					console.log(g);
+					$('#'+g.gno).css('display','block');
+				},
+				//同意加入该群
+					//console.log(str+"111");
+				agreeJoinGroup:function(gno){
+					axios({
+    					url:'groups.action',
+    					method:'post',
+    					params:{op:'joinGroup',gno:gno}
+    				}).then(result=>{
+    					 if(result.data==1){
+    						 $("#JoinGroup").css('display','none');
+    						 alert('加入成功');
+    						 
+    					}else if(result.data==2){
+    						alert('你已经加入该群');
+    					}else{
+    						alert('加入失败');
+    					}
+    				});
+				},
+			
+				
+				//展示查找群页面
+				showFindFriends:function(event){
+					$("#findGroups_li").css('background','#C0C0C0');
+					$("#findFriends_li").css('background','gainsboro');
+					$("#findGroup").css('display','none');
+					$("#findFriends").css('display','block');
+				},
+				//取消创建群聊
+				cancleCreatGroup:function(){
+					$("#creatGroup").css('display','none');
+				},
+				//同意创建群聊
+				agreeCreatGroup:function(){
+					var _this=this;
+					gname =  $('#gname').val();
+					console.log(gname);
+					if(gname!=''){
+						$.ajaxFileUpload(
+				                {
+				                    url: 'GroupFileUpload.action', //用于文件上传的服务器端请求地址
+				                    secureuri: false, //是否需要安全协议，一般设置为false
+				                    fileElementId: 'goupheadphoto', //文件上传域的ID
+				                    dataType: 'json', //返回值类型 一般设置为json
+				                    success: function (data)  //服务器成功响应处理函数
+				                    {	
+				                    	if(data){
+				                    		_this.goupheadphoto=data.goupheadphoto;
+				                    	}
+				                    	if(_this.goupheadphoto==null){
+											alert("请选择图片");
+											return;
+										}else{
+											axios({
+						    					url:'groups.action',
+						    					method:'post',
+						    					params:{op:'creatGroup',gname:gname,goupheadphoto:_this.goupheadphoto}
+						    				}).then(result=>{
+						    					 if(result.data!=0){
+						    						 $("#creatGroup").css('display','none');
+						    						 alert('创建成功');
+						    						 
+						    					}else{
+						    						alert('创建失败');
+						    					}
+						    				});
+										}
+				                    }
+				                });
+
+					}
+				},
+				//查找群
+				findGroup:function(){
+					//发送ajax请求
+    				axios({
+    					url:'groups.action',
+    					method:'post',
+    					params:{op:'findBySnoOrSname',gno:this.gno}
+    				}).then(result=>{
+    					 if(result.data!=null){
+    						this.groups=result.data;
+    						console.log(this.groups);
+    					}else{
+    						alert('没有查询到该群');
+    					}
+    				});
+				},
+				//创建群聊
+				createGroup:function(){
+					$("#creatGroup").css('display','block');
+					
+				},
+				
+				find:function(){
+					this.addr=current_prov_name+''+current_city_name+''+current_country_name;
+					console.log(this.addr);
+					if(this.isonline){
+						this.qstatsu=1;
+					}
+    				//发送ajax请求
+    				axios({
+    					url:'qqinfo.action',
+    					method:'post',
+    					params:{op:'find',fqq:this.fqq,qstatsu:this.qstatsu,sex:this.sex,addr:this.addr}
+    				}).then(result=>{
+    					 if(result.data){
+    						this.qqInfos=result.data;
+    					}else{
+    						alert('没有查询到该用户');
+    					}
+    				});
+    			},
+    			
+    			ShowInfo:function(qqinfo){
+    				$("#showInfo").css("display","block");
+    				this.friendsinfo=qqinfo;
+    			},
+    			close:function(){
+    				$("#showInfo").css("display","none");
+    			},
+    			addFriends(fqq){
+    				var obj={
+							m_id:null,
+							m_date:format(new Date(),'yyyy/MM/dd HH:mm:ss'),
+							m_qq:this.qq,
+							m_fqq:fqq,
+							m_content:null,
+							m_groupqq:null,
+							m_picture:null,
+							m_file:null,
+							isread:'0',
+							m_type:"2"
+						}
+    				var str = JSON.stringify(obj);
+					//console.log(str+"111");
+					
+					ws.send(str);
+    				//添加好友
+    				axios({
+    					url:'friends.action',
+    					method:'post',
+    					params:{op:'add',fqq:fqq}
+    				}).then(result=>{
+    					 if(result.data==1){
+     						alert('好友申请发送成功');
+     						$("#showInfo").css("display","none");
+     					}else if(result.data==0){
+     						alert('好友申请发送失败');
+     					}else if(result.data==2){
+     						alert('你们已经是好友');
+     					}else if(result.data==3){
+     						alert('等待好友同意');
+     					}else if(result.data==4){
+     						alert('等待您同意');
+     					}
+    				});
+    				
+    				
+    			}
+			},
+			mounted:function(){
+				axios.all([checkLogin()])
+				.then(axios.spread((fn1) => {
+					this.qq = fn1.data.qq; //将登录用户的QQ号存储在qq中
+				//	console.log(fn3.data);
+					target="ws://39.105.183.155:8080/WebQQ03/Message?qq="+this.qq		//这里要改地址
+							
+				}));
+			}
+	});
+	var current_prov;
+	var current_city;
+	var current_country;
+	var current_prov_name='';
+	var current_city_name='';
+	var current_country_name='';
+	$(function() {
+		
+		/* 自动加载省份列表 */
+		showPro();
+	});
+
+	function showPro() {
+		$(".btn").disabled = true;
+		var len = province.length;
+		for(var i = 0; i < len; i++) {
+			var provOpt = document.createElement("option");
+			provOpt.innerText = province[i]['name'];
+			provOpt.value = i;
+			prov.appendChild(provOpt);
+		}
+	};
+	/*根据所选的省份来显示城市列表*/
+	function showCity(obj) {
+		var val = obj.options[obj.selectedIndex].value;
+		current_prov = val;
+		current_prov_name=province[current_prov].name;
+		if(val >= 0) {
+			city.style.display = 'inline-block';
+			country.style.display = 'none';
+		} else {
+			city.style.display = 'none';
+			country.style.display = 'none';
+		}
+		if(val != null) {
+			city.length = 1;
+			if(province[val]) {
+				var cityLen = province[val]["city"].length;
+			}
+			for(var j = 0; j < cityLen; j++) {
+				var cityOpt = document.createElement('option');
+				cityOpt.innerText = province[val]["city"][j].name;
+				cityOpt.value = j;
+				city.appendChild(cityOpt);
+			}
+		}
+	};
+	/*根据所选的城市来显示县区列表*/
+	function showCountry(obj) {
+		var val = obj.options[obj.selectedIndex].value;
+		if(val >= 0) {
+			country.style.display = 'inline-block';
+		} else {
+			country.style.display = 'none';
+		}
+		current_city = val;
+		current_city_name=province[current_prov]['city'][current_city].name;
+		if(val != null) {
+			country.length = 1;
+			if(province[current_prov]["city"][val]) {
+				var countryLen = province[current_prov]["city"][val].districtAndCounty.length;
+			}
+			if(countryLen == 0) {
+				addrShow.value = province[current_prov].name + '-' + province[current_prov]["city"][val].name;
+				return;
+			}
+			for(var n = 0; n < countryLen; n++) {
+				var countryOpt = document.createElement('option');
+				countryOpt.innerText = province[current_prov]["city"][val].districtAndCounty[n];
+				countryOpt.value = n;
+				country.appendChild(countryOpt);
+			}
+		}
+	};
+
+	function selectCountry(obj) {
+		current_country = obj.options[obj.selectedIndex].value;
+		current_country_name=province[current_prov]['city'][current_city]['districtAndCounty'][current_country];
+		$(".btn").disabled = false;
+
+	};
+	function checkLogin() {
+		return axios.get('qqinfo.action?op=check');
+}
+	
+	<!-- 上传图片并预览的js文件 end -->
+    var img = document.querySelector('input[name=goupheadphoto]');
+    imgs = document.querySelector('#img1');
+    if(img){
+        img.addEventListener('change', function() {
+            var file = this.files[0];
+            var reader = new FileReader();
+            // 监听reader对象的的onload事件，当图片加载完成时，把base64编码賦值给预览图片
+            reader.addEventListener("load", function() {
+                imgs.src = reader.result;
+            }, false);
+            // 调用reader.readAsDataURL()方法，把图片转成base64
+            reader.readAsDataURL(file);
+            $("#img1").eq(1).css("display", "block");
+        }, false);
+    }
+
+    $(function(){
+		setTimeout('inti()',1000);
+		
+	})
+	function inti(){
+		 if ('WebSocket' in window) {
+                ws = new WebSocket(target);
+            } else if ('MozWebSocket' in window) {
+                ws = new MozWebSocket(target);
+            } else {
+                alert('WebSocket is not supported by this browser.');
+                return;
+            }
+		 console.log('打开websocket成功！');
+		//ws.onopen
+		//ws.onclose
+		ws.onmessage	=function(event){
+			eval(" var msg ="+event.data);
+			//console.log(event.data);		///得到消息发送的消息
+			console.log(msg);
+			
+			
+			
+		}
+		
+		
+	}
+    var format = function(time, format) {   //前台获取时间，转化为国际时间，可以当做工具使用
+	    var t = new Date(time);
+	    var tf = function(i){return (i < 10 ? '0' : "") + i};
+	    return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function(a){
+	        switch(a){
+	            case 'yyyy':
+	                return tf(t.getFullYear());
+	                break;
+	            case 'MM':
+	                return tf(t.getMonth() + 1);
+	                break;
+	            case 'mm':
+	                return tf(t.getMinutes());
+	                break;
+	            case 'dd':
+	                return tf(t.getDate());
+	                break;
+	            case 'HH':
+	                return tf(t.getHours());
+	                break;
+	            case 'ss':
+	                return tf(t.getSeconds());
+	                break;
+	        }
+	    })
+	}
+</script>

@@ -1,0 +1,280 @@
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<style type="text/css">
+	#notice {
+		margin: auto;
+		height: 100%;
+		background: #eff1f9;
+	}
+	
+	.notic_top {
+		height: 10%;
+		width: 90%;
+		margin-left: 5%;
+		margin-top: 4%;
+		background: lightskyblue;
+		float: left;
+		text-align: center;
+		border-radius:10px;
+	}
+	
+	.notic_top span {
+		line-height: 80px;
+		font-size: 50px;
+		letter-spacing: 50px;
+		color: #696969;
+	}
+	
+	.notic_content {
+		background: lightskyblue;
+		border-radius:15px;
+		height: 20%;
+		width: 42.5%;
+		background: #fff;
+		float: left;
+		margin-top: 4%;
+		margin-left: 5%;
+	}
+	
+	.notic_content #notic_content_left {
+		height: 60%;
+		width: 30%;
+		margin-left: 30px;
+		margin-top: 50px;
+		float: left;
+	}
+	
+	.notic_content #notic_content_left img {
+		border-radius: 100px;
+		vertical-align: middle;
+		width: 80px;
+		height: 80px;
+		float: left;
+		border: 1px solid #e0e0e0;
+	}
+	
+	.notic_content #notic_content_left span {
+		margin-top: 20px;
+		margin-left: 20px;
+		width: 80px;
+		height: 10px;
+		display: block;
+		float: left;
+	}
+	
+	.notic_content #notic_content_right {
+		
+		height: 60%;
+		width: 30%;
+		margin-right: 30px;
+		margin-top: 50px;
+		float: right;
+	}
+	
+	.notic_content #notic_content_right button {
+		margin-left: 30px;
+		margin-top: 20px;
+		width: 80px;
+		height: 30px;
+	}
+	/* 重命名分组输入框 */
+	
+	.modifybox {
+		background-color: whitesmoke;
+		width: 300px;
+		height: 130px;
+		border-width: 1px;
+		border-color: grey;
+		border-style: solid;
+		border-radius: 20px;
+		text-align: center;
+		display: none;
+		position: absolute;
+		left: 800px;
+		top: 300px;
+	}
+	
+	.box_input {
+		border-radius: 10px;
+		float: left;
+		width: 250px;
+		height: 30px;
+		margin-left: 25px;
+		margin-right: 25px;
+		margin-top: 20px;
+	}
+	
+	.box_but1 {
+		background: #58D68D;
+		float: left;
+		width: 60px;
+		height: 30px;
+		border-radius: 10px;
+		margin-top: 30px;
+		margin-left: 25px;
+	}
+	
+	.box_but2 {
+		background: #58D68D;
+		float: right;
+		width: 60px;
+		height: 30px;
+		border-radius: 10px;
+		margin-top: 30px;
+		margin-right: 25px;
+	}
+</style>
+<div id="notice">
+	<!--修改好友分组框（隐藏）-->
+	<div id="selectSubGroup" class="modifybox">
+		<select class="box_input" id="groupselect" v-model="select_sno">
+			<option v-for="s in subGroup" :value="s.sno">{{s.sname}}</option>
+		</select>
+		<button class="box_but1" @click="cancleSelectSubGroup">取消</button>
+		<button class="box_but2" @click="agreeSelectSubGroup">确定</button>
+	</div>
+	<div id="" class="notic_top">
+		<span>消息通知</span>
+	</div>
+	<div id="notice_connect">
+
+	</div>
+
+</div>
+
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/slide.js"></script>
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/axios.js"></script>
+<script type="text/javascript">
+
+var menu_qq='';
+var menu_fqq='';
+var menu_el=null;
+var vm = new Vue({
+	el: '#notice',
+	data: {
+		qqinfos:{},
+		subGroup:{},
+		select_sno:'',
+	},
+	methods:{
+		agreeSelectSubGroup:function(){
+			
+			if(this.select_sno!=''){
+				axios({
+					url:'friends.action',
+					method:'post',
+					params:{op:'agreeAsFriend',fqq:menu_fqq,qq:menu_qq,sno:this.select_sno}
+				}).then(result=>{
+					alert(result.data);
+					if(result.data!=0){
+						$("#selectSubGroup").css('display','none');
+						$(menu_el).next().css("display","none");
+						$(menu_el).prev().css("display","block");
+						alert('你们已经是好友了');
+						
+					}
+					var parentWin = window.parent;
+					parentWin.fresh();
+				});
+			}else{
+				alert('请选择分组名');
+			}
+			
+		},
+		cancleSelectSubGroup:function(){
+			$("#selectSubGroup").css('display','none');
+		}
+		
+	},
+	mounted:function(){
+		
+		//同时发送多个请求   函数存在数组中
+		axios.all([findDisagreeFriend(),findSubgroup()])
+			.then(axios.spread((fn1,fn2) => {
+				this.subGroup=fn2.data;
+				if(fn1.data!=null) {
+					this.qqinfos=fn1.data;
+					var qf=fn1.data;
+					var output='';
+					for(var i=0;i<qf.length ; i++){
+						if(qf[i].isagree===4){
+							output+='<div class="notic_content" >'+
+										'<div id="notic_content_left">'+
+											'<img src="'+qf[i].headphoto+'"> <span id="">'+qf[i].nickname+'</span>'+
+											'<span id="">'+qf[i].qq+'</span>'+
+										'</div>'+
+										'<div id="notic_content_right">'+
+											'<span class="but" style="display: none">你已拒绝</span>' +
+											'<span class="but" style="display: none">你已同意</span>'+
+											'<button class="but" onclick="agree(event,'+qf[i].qq+','+qf[i].fqq+')">同意</button>'+
+											'<button class="but" onclick="refuse(event,'+qf[i].qq+','+qf[i].fqq+')">拒绝</button>'+
+										'</div>'+
+									'</div>';
+						}else if(qf[i].isagree===1){
+							output+='<div class="notic_content" >'+
+									'<div id="notic_content_left">'+
+										'<img src="'+qf[i].headphoto+'"> <span id="">'+qf[i].nickname+'</span>'+
+										'<span id="">'+qf[i].qq+'</span>'+
+									'</div>'+
+									'<div id="notic_content_right">'+
+										'<span class="but">你已同意</span>'+
+									'</div>'+
+								'</div>';
+						}else if(qf[i].isagree===2){
+							output+='<div class="notic_content" >'+
+									'<div id="notic_content_left">'+
+										'<img src="'+qf[i].headphoto+'"> <span id="">'+qf[i].nickname+'</span>'+
+										'<span id="">'+qf[i].qq+'</span>'+
+									'</div>'+
+									'<div id="notic_content_right">'+
+										'<span class="but">你已拒绝</span>' +
+									'</div>'+
+								'</div>';
+						}
+					}
+					$('#notice_connect').html(output);
+				}else{
+					alert('暂时没有通知');
+				}
+			}));
+	
+	}
+	
+});
+
+function findDisagreeFriend(){
+	return axios.get('qqinfo.action?op=findDisAgree');
+};
+function findSubgroup(){
+	return axios.get('groups.action?op=findSubgroup');
+};
+
+
+function agree(event,qq,fqq){
+	console.log('11111');
+	menu_qq=qq;
+	menu_fqq=fqq;
+	menu_el=event.currentTarget;
+	$("#selectSubGroup").css('display','block');
+	$(menu_el).css("display","none");
+};
+function refuse(event,qq,fqq){
+	var el=event.currentTarget;
+	$(el).css("display","none");
+	$(el).prev().css("display","none");
+	$(el).prev().prev().prev().css("display","block");
+	axios({
+		url:'friends.action',
+		method:'post',
+		params:{op:'refuseAsFriend',fqq:fqq,qq:qq}
+	}).then(result=>{
+		alert(result.data);
+		if(result.data!=0){
+			alert('你已拒绝他的好友申请');
+		}
+	});
+}
+
+</script>

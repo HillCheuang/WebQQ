@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>注册2.0</title>
+<link rel="stylesheet" href="css/mode.css" />
+<link rel="stylesheet" href="css/headfoot.css" />
+<link rel="stylesheet" href="css/reg.css" /> 
+</head>
+<style>
+	
+	
+	
+html{
+		background:url(img/regbg.jpg);
+		background-size:cover;
+	}
+</style>
+
+<body>
+<div id="app">
+		<div id="header">
+			<div id="header_right">
+				<a href="#">基本版</a> <span>|</span> <a href="#">English</a> <span>|</span>
+				<a href="#">手机版</a> <span>|</span> <a href="#">企业邮箱</a>
+
+			</div>
+		</div>
+		<div class="container">
+
+			<div class="wrapper"><h2>用户注册</h2>
+				<ul class="steps">
+					<li class="is-active">step 1</li>
+					<li>step 2</li>
+					<li>step 3</li>
+					<li>step 4</li>
+				</ul>
+
+				<form class="form-wrapper" style="width: 700px; height: 330px; border-radius: 10px;">
+					<fieldset class="section is-active">
+						<li><input type="text" id="nickname" name="nickname"
+							v-model="nickname" @keyup="judge('nickname')" placeholder="请输入昵称">
+							<span class="error_tip" style="margin-left:160px;">{{mesName}}</span></li>
+						</li>
+						<li><input type="password" id="pwd" name="pwd" v-model="pwd"
+							@keyup="judge('pwd')" placeholder="请输入密码"> <span
+							class="error_tip" style="margin-left:160px;">{{mesPwd}}</span></li>
+						</li>
+						<li><input type="password" id="cpwd" name="cpwd"
+							v-model="cpwd" @keyup="judge('cpwd')" placeholder="请再次确认密码">
+							<span class="error_tip" style="margin-left:160px;">{{mesCpwd}}</span></li>
+						</li>
+						<li><input type="text" id="email" name="email"
+							v-model="email" @keyup="judge('email')" placeholder="请输入邮箱">
+							<span class="error_tip" style="margin-left:160px;">{{mesEmail}}</span></li>
+						</li>
+
+						<div class="button" @click="Next('1',$event)" style="margin-top: 500px;">下一步</div>
+					</fieldset>
+
+					<fieldset class="section">
+						<li><input type="text" id="tel" name="tel" v-model="phonenum"
+							@keyup="judge('phonenum')" placeholder="请输入电话号码"> 
+							<span class="error_tip yzm_tip" style="margin-left:160px;">{{mesPhonenum}}</span></li>
+						<li>
+							<div class="option">
+							<select  type="text" id="question" v-model="question"
+								name="question" @blur="judge('question')" >
+								<option style="background-color: white;">请选择密保问题</option>
+								<option style="background-color: white;" value="您母亲的名字？">您母亲的名字？</option>
+								<option style="background-color: white;" value="您母亲的生日？">您母亲的生日？</option>
+								<option style="background-color: white;" value="您父亲的名字？">您父亲的名字？</option>
+							</select> <span class="error_tip">{{mesQuestion}}</span>
+						</div>
+						</li>
+						
+
+						<li><input type="text" id="answer" name="answer"
+							v-model="answer" placeholder="请输入密保答案" @keyup="judge('answer')" >
+							<span class="error_tip" style="margin-left:155px;">{{mesAnswer}}</span></li>
+							
+						<li  ><input type="text" id="yzm" name="yzm" style="float: left; margin-left: 155px;"
+							placeholder="请输入验证码" @blur="judge('yzm')" >
+							<span class="error_tip" style="margin-left: 155px; float: left;">{{mesYzm}}</span></li>
+							<canvas id="canvas" width="100" height="43" onclick="dj()"
+								style="border: 1px solid #ccc; border-radius: 5px; margin-bottom: 60px;"></canvas>
+								
+						<div class="button1" >上一步</div>
+						<div class="button" @click="Next('2',$event)" >下一步</div>
+					</fieldset>
+
+					<fieldset class="section">
+						<h3>
+							请为自己选择一个头像吧！
+							<h3>
+								<!--  上传头像-->
+								<div id="head" style="margin-top: 50px;">
+									<li><input type="file" name="headphoto" id="headphoto" /></li> <img
+										id="img" src="" width="100px" height="100px"
+										style="border-radius: 100px; vertical-align: middle;" >
+								</div>
+								<div class="button1">上一步</div>
+								<input class="submit button" type="submit" value="提交"
+									@click="Next('3',$event)">
+					</fieldset>
+
+
+
+					<fieldset class="section" >
+						<p style="margin-top: 50px; font-size: 22px;">账号注册成功！</p>
+						<p style="margin-top: 10px; font-size: 20px;">您的账号为：</p>
+						<p style="margin-top: 10px; font-size: 22px; color: cornflowerblue;">{{this.qq}}</p>
+
+						<div class="button">
+							<a href="login.html" style="color: white;">点击登录</a>
+						</div>
+					</fieldset>
+				</form>
+				
+				
+			</div>
+		</div>
+		
+		
+	</div>	
+
+	<script src='js/jquery-1.9.1.js'></script>
+
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script type="text/javascript" src="js/ajaxfileupload.js"></script>
+	<script type="text/javascript" src="js/axios.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+	  $(".form-wrapper .button1").click(function(){
+	    var button = $(this); 
+	    var currentSection = button.parents(".section");
+	    var currentSectionIndex = currentSection.index();
+	    var headerSection = $('.steps li').eq(currentSectionIndex);
+	    currentSection.removeClass("is-active").prev().addClass("is-active");
+	    headerSection.removeClass("is-active").prev().addClass("is-active");
+	    if(currentSectionIndex === 3){
+	      $(document).find(".form-wrapper .section").first().addClass("is-active");
+	      $(document).find(".steps li").first().addClass("is-active");
+	    }
+	  });
+  
+});
+
+var vm = new Vue({
+			el: '#app',
+			data: {
+				qq:'',
+				nickname: '',
+				pwd: '',
+				cpwd: '',
+				email: '',
+				phonenum: '',
+				question: '',
+				answer: '',
+				headphoto:'',
+				mesName: '',
+				mesPwd: '',
+				mesCpwd: '',
+				mesEmail: '',
+				mesPhonenum: '',
+				mesQuestion: '',
+				mesAnswer: '',
+				mesYzm:''
+
+			},
+			methods: {
+				judge:function(e) {
+					if(e=='nickname') {
+						
+						if(!this.nickname) {
+							this.mesName = '用户名不能为空';
+						} else {
+							this.mesName = '';
+						}
+
+					} else if(e == 'pwd') {
+						var pat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{6,14}$/;
+						if(!this.pwd) {
+							this.mesPwd = '密码不能为空';
+						} else if(!pat.test(this.pwd)) {
+							this.mesPwd = '密码至少包含小写字母、大写字母和数字且长度不能低于六位';
+						} else {
+							this.mesPwd = '';
+						}
+
+					} else if(e =='cpwd') {
+						if(!this.cpwd) {
+							this.mesCpwd= '请再次输入密码';
+						} else if(this.cpwd!=this.pwd) {
+							this.mesCpwd = '前后密码不一致';
+						} else {
+							this.mesCpwd= '';
+						}
+
+					} else if(e =='phonenum') {
+						
+						var part =/^1(3|4|5|7|8)\d{9}$/;
+						if(!this.phonenum) {
+							this.mesPhonenum = '电话号码不能为空';
+						} else if(!part.test(this.phonenum)) {
+							this.mesPhonenum = '手机号码格式有误，请重填';
+						} else {
+							this.mesPhonenum = '';
+						}
+					} 
+					 else if(e == 'email') {
+						var pat = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+						if(!this.email) {
+							this.mesEmail = '邮箱不能为空';
+						} else if(!pat.test(this.email)) {
+							this.mesEmail = '邮箱格式不正确';
+						} else {
+							this.mesEmail = '';
+						}
+					} else if(e == 'question') {
+						
+						if(!this.question) {
+							this.mesQuestion = '请选择密保问题';
+						} else {
+							this.mesQuestion = '';
+						}
+					} else if(e=='answer') {
+						if(!this.answer) {
+							this.mesAnswer = '请选择密保答案';
+						} else {
+							this.mesAnswer= '';
+						}
+					}else if(e=='yzm'){
+						var val=document.getElementById("yzm").value;  
+			            var num = show_num.join("");
+			            if(val==''){
+			            	this.mesYzm='请输入验证码！';
+			            	return;
+			            }else if(val == num){
+			            	this.mesYzm='';
+
+			            }else{
+			            	this.mesYzm='验证码错误！重新输入';
+			                draw(show_num);
+			            }
+					}
+					
+				},
+				
+				
+				Next:function(t,event){
+					var el = event.currentTarget
+					if(t=='1'){
+						if(!this.nickname||!this.pwd||!this.cpwd||!this.email||this.mesName||this.mesPwd||this.mesCpwd||this.mesEmail){
+							alert("请填写满足要求的注册格式");
+							return;
+						}else{
+							doNext(el);
+						}
+					}
+					if(t=='2'){
+						
+						if(this.mesPhonenum||this.mesQuestion||this.mesAnswer||this.mesYzm||!this.phonenum||!this.question||!this.answer){
+							
+							alert("请填写满足要求的注册格式");
+							return;
+						}else{
+							doNext(el);
+						}
+					}if(t=='3'){
+					var _this=this;
+					 $.ajaxFileUpload(
+		                {
+		                    url: 'QQFileUpload.action', //用于文件上传的服务器端请求地址
+		                    secureuri: false, //是否需要安全协议，一般设置为false
+		                    fileElementId: 'headphoto', //文件上传域的ID
+		                    dataType: 'json', //返回值类型 一般设置为json
+		                    success: function (data)  //服务器成功响应处理函数
+		                    {	
+		                    	if(data){
+		                    		_this.headphoto=data.headphoto;
+		                    	}
+		                    	if(_this.headphoto==null){
+									alert("请选择图片");
+									return;
+								}else{
+									
+									axios({
+										url: 'qqinfo.action',
+										method: 'post',
+										params: {
+											op: 'reg',
+											nickname: _this.nickname,
+											pwd: _this.pwd,
+											email: _this.email,
+											phonenum: _this.phonenum,
+											question: _this.question,
+											answer: _this.answer,
+											headphoto:_this.headphoto,
+										}
+									}).then(result => {
+										if(result.data==0) {
+											alert('用户注册失败！');
+											return;
+										} else {
+											_this.qq=result.data;
+											doNext(el);
+										}
+									});
+									
+								}
+		                    }
+		                
+		                }
+		           	 );
+					 /* this.headphoto=headf;
+					 console.log('headf'+headf);
+					 console.log('this.headphoto'+headf); */
+						
+					}
+				}
+
+			}
+		});
+		
+function doNext(event){
+	var button = $(event);
+    var currentSection = button.parents(".section");
+    var currentSectionIndex = currentSection.index();
+    var headerSection = $('.steps li').eq(currentSectionIndex);
+    currentSection.removeClass("is-active").next().addClass("is-active");
+    headerSection.removeClass("is-active").next().addClass("is-active");
+    $(".form-wrapper").submit(function(e) {
+      e.preventDefault();
+    });
+    if(currentSectionIndex === 3){
+      $(document).find(".form-wrapper .section").first().addClass("is-active");
+      $(document).find(".steps li").first().addClass("is-active");
+    }
+}
+
+	
+	
+	
+	
+	
+	
+<!-- 上传图片并预览的js文件 end -->
+     var small_img = document.querySelector('input[name=small_img]');
+     var img = document.querySelector('input[name=headphoto]');
+     small_imgs = document.querySelector('#small_img');
+     imgs = document.querySelector('#img');
+     if (small_img) {
+         small_img.addEventListener('change', function() {
+             var file = this.files[0];
+             var reader = new FileReader();
+             // 监听reader对象的的onload事件，当图片加载完成时，把base64编码賦值给预览图片
+             reader.addEventListener("load", function() {
+                 small_imgs.src = reader.result;
+             }, false);
+             // 调用reader.readAsDataURL()方法，把图片转成base64
+             reader.readAsDataURL(file);
+             $("img").eq(0).css("display", "block");
+         }, false);
+     }
+     if(img){
+         img.addEventListener('change', function() {
+             var file = this.files[0];
+             var reader = new FileReader();
+             // 监听reader对象的的onload事件，当图片加载完成时，把base64编码賦值给预览图片
+             reader.addEventListener("load", function() {
+                 imgs.src = reader.result;
+             }, false);
+             // 调用reader.readAsDataURL()方法，把图片转成base64
+             reader.readAsDataURL(file);
+             $("img").eq(1).css("display", "block");
+         }, false);
+     }
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+		
+var show_num = [];
+draw(show_num);
+function dj(){
+ draw(show_num);   
+ }
+//生成验证码
+function draw(show_num) {
+        var canvas_width=document.getElementById('canvas').clientWidth;
+        var canvas_height=document.getElementById('canvas').clientHeight;
+        var canvas = document.getElementById("canvas");//获取到canvas的对象，演员
+        var context = canvas.getContext("2d");//获取到canvas画图的环境，演员表演的舞台
+        canvas.width = canvas_width;
+        canvas.height = canvas_height;
+        var sCode = "A,B,C,E,F,G,H,J,K,L,M,N,P,Q,R,S,T,W,X,Y,Z,1,2,3,4,5,6,7,8,9,0,q,w,e,r,t,y,u,i,o,p,a,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m";
+        var aCode = sCode.split(",");
+        var aLength = aCode.length;//获取到数组的长度
+			
+        for (var i = 0; i <= 3; i++) {
+            var j = Math.floor(Math.random() * aLength);//获取到随机的索引值
+            var deg = Math.random() * 30 * Math.PI / 180;//产生0~30之间的随机弧度
+            var txt = aCode[j];//得到随机的一个内容
+            show_num[i] = txt;
+            var x = 10 + i * 20;//文字在canvas上的x坐标
+            var y = 20 + Math.random() * 8;//文字在canvas上的y坐标
+            context.font = "bold 23px 微软雅黑";
+
+            context.translate(x, y);
+            context.rotate(deg);
+
+            context.fillStyle = randomColor();
+            context.fillText(txt, 0, 0);
+
+            context.rotate(-deg);
+            context.translate(-x, -y);
+        }
+        for (var i = 0; i <= 5; i++) { //验证码上显示线条
+            context.strokeStyle = randomColor();
+            context.beginPath();
+            context.moveTo(Math.random() * canvas_width, Math.random() * canvas_height);
+            context.lineTo(Math.random() * canvas_width, Math.random() * canvas_height);
+            context.stroke();
+        }
+        for (var i = 0; i <= 30; i++) { //验证码上显示小点
+            context.strokeStyle = randomColor();
+            context.beginPath();
+            var x = Math.random() * canvas_width;
+            var y = Math.random() * canvas_height;
+            context.moveTo(x, y);
+            context.lineTo(x + 1, y + 1);
+            context.stroke();
+        }
+    }
+function randomColor() {//得到随机的颜色值
+        var r = Math.floor(Math.random() * 256);
+        var g = Math.floor(Math.random() * 256);
+        var b = Math.floor(Math.random() * 256);
+        return "rgb(" + r + "," + g + "," + b + ")";
+    } 
+		
+		
+		
+		
+		
+</script>
+
+</body>
+</html>

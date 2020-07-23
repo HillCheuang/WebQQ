@@ -1,0 +1,136 @@
+*{
+			margin:0;
+			padding: 0;
+			background:#F0F0F0;
+			list-style: none;
+		}
+			
+			
+			#content{
+				width: 960px;
+				height: 450px;
+				margin: 10px auto;
+				
+			}
+			#left{
+				width: 500px;
+				height: 400px;
+				margin-top: 30px;
+				float: left;
+				
+			}
+			#right{
+				width: 400px;
+				height: 400px;
+				margin-top: 100px;
+				margin-left: 300px;
+				float: left;
+				border-radius: 5px;
+				background-color: white;
+				
+			<!--div 阴影-->
+			
+			-webkit-border-radius: 8px;
+ 			 -moz-border-radius: 8px;
+  				border-radius: 8px;
+  			-webkit-box-shadow: #ccc 0px 0px 10px;
+  			-moz-box-shadow: #ccc 0px 0px 10px;
+  				box-shadow: #ccc 0px 0px 50px;
+			}
+			#right #nav{
+				height: 50px;
+				line-height: 50px;
+				border-bottom: 1px solid lightgray;
+				background-color: white;
+			}
+			
+			#right #nav #span1{
+				color: #000;
+				font-size: 16px;
+				padding:0 60px;
+				margin-left: 50px;
+				background-color: white;
+			}
+			
+			#showimg{
+				width: 80px ;
+				height: 80px; 
+				margin-left: 164px; 
+				border: 1px solid black;
+				background-color: white;
+				border-radius: 100px;
+			}
+			
+			#logincontent {
+								background-color: white;
+
+			}
+			.head li{
+								background-color: white;
+								margin-bottom: 10px;
+
+			}
+			#logincontent form{
+				padding-top: 10px;
+				width: 310px;
+				padding-left: 30px;
+				background-color: white;
+				margin-left: 20px;
+			}
+			
+			/*并集选择器*/
+			.qqdiv,.pwddiv,.subdiv{
+				width: 284px;
+				height: 38px;
+				border-radius: 2px;
+				margin-bottom: 13px;
+				background-color: white;
+				
+			}
+			
+			.subdiv{
+			margin-top: 20px;	
+			
+			}
+			
+			#qq,#pwd{
+				border: 0;
+				width: 232px;
+				height: 38px;
+				line-height: 38px;
+				font-size: 14px;
+				padding-left: 162px;
+				background-color: white;
+				border-bottom:1px solid #e0e0e0;
+			}
+			.cb{
+				margin-bottom: 13px;
+				background-color: white;
+			}
+			.cb span{
+				font-size: small;
+				padding-left: 10px;
+				background-color: white;
+			}
+			#sub{
+				height: 40px;
+				line-height: 40px;
+				width: 100%;
+				border: 0;
+				font-size: 18px;
+				font-weight: bold;
+				color: #fff;
+				background: #5a98de;
+				border-radius: 5px;
+				margin-left: 55px;
+			}
+			#cb{
+				margin-left: 160px;
+			}
+			
+		a{
+				text-decoration: none;
+				color: gray;
+				font-family: "微软雅黑";
+				
+			}

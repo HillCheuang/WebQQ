@@ -1,0 +1,76 @@
+html {
+	background-color: #edf5f8;
+}
+
+#center {
+	background: #edf5f8;
+	margin-left: 320px;
+	margin-top: 200px;
+}
+
+form {
+	background: white;
+	width: 750px;
+	height: 450px;
+	border: none;
+	margin-left: 300px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	-webkit-box-shadow: #ccc 0px 0px 10px;
+	-moz-box-shadow: #ccc 0px 0px 10px;
+	box-shadow: #ccc 0px 0px 50px;
+}
+
+#headinput {
+	height: 10px;
+	width: 20px;
+	float: left;
+}
+
+#img {
+	width: 100px;
+	height: 100px;
+	margin-top: 50px;
+	margin-left: 50px;
+	border-radius: 100%;
+	border: none;
+	background: burlywood;
+}
+
+#mesg {
+	margin-top: 80px;
+	width: 70%;
+	margin-left: 200px;
+	float: right;
+}
+
+#qq, #nickname, #email, #phone, #addr, #home, #job, #company {
+	width: 130px;
+	border: none;
+	border-bottom: 1px groove lightgray;
+}
+
+#signature {
+	width: 130px;
+	height: 40px;
+	border: 1px groove lightgray;
+	margin-left: 60px;
+}
+
+#nickname, #sex, #blood, #email, #phone, #addr, #home, #job, #company {
+	margin-top: 30px;
+}
+
+#sub {
+	border: none;
+	margin-top: 50px;
+	margin-left: 600px;
+	background: lightskyblue;
+	width: 80px;
+	height: 30px;
+	border-radius: 10px;
+	font-size: 15px;
+	float: left;
+	color: white;
+}

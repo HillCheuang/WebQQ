@@ -1,0 +1,5 @@
+url=jdbc:mysql://39.105.183.155:3306/webqq?characterEncoding=utf-8&useSSL=false
+driverName=com.mysql.jdbc.Driver
+user=root
+password=Ly1982119376.
+InitSize = 30

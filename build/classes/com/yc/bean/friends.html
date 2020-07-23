@@ -1,0 +1,780 @@
+<link rel="stylesheet" href="css/friends.css" />
+<link href="css/jquery.mCustomScrollbar.min.css" rel="stylesheet" type="text/css" />
+ <link rel="stylesheet" href="css/jquery.emoji.css"/>
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+	integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+	crossorigin="anonymous">
+<div class="friendsbox" id="app">
+<!-- <div id ="shiping" style="width: 350px;height: 150px; position: absolute; left: 700px; top: 200px; ">确定视频与进行视频通话吗？PS（注意事项）:可能不能进行视频通话，因为我们用的服务器是免费的stun服务器而且服务器是谷歌提供的，有时候不能视频通话
+<br/><a href="https://www.baidu.com/">确认</a> <button style="left: 0px;">取消</button>
+</div> -->
+<!--重命名分组框（隐藏）-->
+	<div id="rNamebox" class="modifybox">
+		<input class="box_input" type="text"  placeholder="请输入分组名"
+			v-model="rName" />
+		<button class="box_but1"  @click="cancleRname">取消</button>
+		<button class="box_but2" @click="agreeRname">确定</button>
+	</div>
+	<!--添加分组框（隐藏）-->
+	<div id="addGroupbox" class="modifybox">
+		<input type="text" class="box_input"  placeholder="请输入分组名"
+			v-model="addName" />
+		<button class="box_but1" @click="cancleAddGroup">取消</button>
+		<button class="box_but2" @click="agreeAddGroup">确定</button>
+	</div>
+	<!--删除分组框（隐藏）-->
+	<div id="delGroupbox" class="modifybox">
+		<span class="box_input" style=""></span>
+		<button class="box_but1" @click="cancleDelGroup">取消</button>
+		<button class="box_but2" @click="agreeDelGroup">确定</button>
+	</div>
+
+	<!--分组右键菜单栏（隐藏）-->
+	<div id="">
+		<!-- 		<div id="cs" oncontextmenu="myFunction(event)"></div> -->
+		<div class="Fmenu" id="group_menu">
+			<div class="menu" @click="freshFriend">刷新好友列表</div>
+			<div class="menu" @click="addGroup">添加分组</div>
+			<div class="menu" @click="RName">重命名</div>
+			<div class="menu" id="del_subgroup" @click="delGroup">删除分组</div>
+		</div>
+	</div>
+	<!--好友右键菜单栏（隐藏）-->
+	<div id="">
+		<!-- 		<div id="cs" oncontextmenu="myFunction(event)"></div> -->
+		<div class="Fmenu" id="firend_menu">
+			<div class="menu" @click="showFriendInfo">查看好友信息</div>
+			<div class="menu" @click="modifySubGroup">修改好友分组</div>
+			<div class="menu"  @click="delFriend">删除好友</div>
+		</div>
+	</div>
+	<!--修改好友分组框（隐藏）-->
+	<div id="modifySubGroup" class="modifybox">
+		<select class="box_input" id="groupselect" v-model="Friend_menu_sno">
+			 <option v-for="s in subGroup"  :value="s.subgroup.sno">{{s.subgroup.sname}}</option>
+		</select>
+		<button class="box_but1" @click="cancleModifyFriend">取消</button>
+		<button class="box_but2" @click="agreeModifyFriend">确定</button>
+	</div>
+	<!--删除好友框（隐藏）-->
+	<div id="delFriendbox" class="modifybox">
+		<span class="box_input" style=""></span>
+		<button class="box_but1" @click="cancleDelFriend">取消</button>
+		<button class="box_but2" @click="agreeDelFriend">确定</button>
+	</div>
+	<div class="friendsleft">
+		<div class="top1">	<!--  @click="showfriend"  @click="showgroup-->
+			<li><i class="fas fa-user" @click="showFriend()"></i></li>
+			<li><i class="fas fa-users" @click="showGroup()"></i></li>
+		</div>
+		<div class="top">
+			<i class="fas fa-bars" style="font-size: 1.4em"></i> <input
+				type="text" placeholder="search"
+				style="width: 300px; height: 36px; margin-left: 25px;">
+			<button class="searchbtn">
+				</style>
+				<i class="fas fa-search"></i>
+			</button>
+		</div>
+
+<!-- 私聊 -->
+		<div class="center" id="friends">
+			<ul v-for="s in subGroup" id="friend" >
+				<span class="group" style="margin-left: 10px;" v-on:contextmenu.self="showGMenu($event,s)"  @click="show($event)">{{s.subgroup.sname}}
+				</span>
+				<div style="display:none;">
+					<li v-for="f in s.friends"  v-on:contextmenu.self="showFMenu($event,f)" ><img
+						style="border-radius: 20px; vertical-align: middle; height:50px;width:50px;"
+						:src="f.headphoto" @click="chatWithFriend(f)"> <span style="margin-left: 10px;">{{f.nickname}}</span>
+					</li>			
+				</div>
+			</ul>
+		</div>
+		<!-- 群聊 -->
+		<div class="center" id="groups" style="display:none;" >
+				<div >
+					<li v-for="g in groups" ><img
+						style="border-radius: 20px; vertical-align: middle; height:50px;width:50px;"
+						:src ='g.goupheadphoto' @click="chatWithGroups(g)"
+						> <span style="margin-left: 10px; ">{{g.gname}}</span>
+					</li>
+				</div>
+		</div>
+	</div>
+	<div style="width: 75% ; height: 100%;">
+		<div class="char_top" id="top">
+			<img style="border-radius: 20px; vertical-align: middle; height:50px;width:50px;"
+				:src="fqqheadphoto"> <span
+				style="margin-left: 20px;">{{fqqNickName}}({{fqq}})</span> <i
+				class="fas fa-ellipsis-v"
+				style="font-size: 1.4em; position: absolute; right: 20px; color: gray;"></i>
+		</div>
+		<div class="char_center" id="center" style="height: 60%; " >
+			
+		</div>
+		<div class="char_footer">
+			<textarea maxlength="800" rows="5" cols="40"
+				style="width: 100%; height: 70%; resize: none; border: none; background-color: #fff; color: #b2b2b2; font-size: 16px; border: 1px solid #e6e6e6"
+				placeholder="请在此输入要发送的内容..."  id="content"></textarea>
+			
+                    <a href="javascript:void(0)" style="margin-left: 30px; float: left;" @click="shipingtonghua(this.qq,this.fqq,this.fqqNickName)"><img src="img/shipingtonghua.png" ></a>
+			<button class="sendbtn" @click="sendMsg()">发送</button>
+			<p id='p' style="display: none;"></p>
+		</div>
+	</div>
+</div>
+	<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="js/slide.js"></script>
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script type="text/javascript" src="js/websocket.js"></script>
+	<script type="text/javascript" src="js/axios.js"></script>
+	<script src="js/jquery.mCustomScrollbar.js"></script>
+	<script src="js/jquery.emoji.js"></script>
+	<script src="js/emoji.list.js"></script>
+	<script>
+	var index;
+	 (function($){
+	        $(document).ready(function(){
+	            $("#center").mCustomScrollbar();
+	            $("#content").emoji({
+	    		    showTab: true,
+	    		    animation: 'fade',
+	    		    basePath: 'images/emoji',
+	    		    icons: emojiLists   // 注：详见 js/emoji.list.js
+	    			});
+	        });
+	    })(jQuery);
+	 var target;
+ 		var vm = new Vue({
+			el: '#app',
+			data: {
+				flag:false,
+				subGroup:{},
+				qq: '',		//登录的QQ号码
+				nickname:'',			//登录的QQ名称	
+				groups: [],				//登录人的群组
+				fqqNickName:'',			//对方的好友名字
+				groupname:'',
+				groupno:'',
+				qqheadphoto:'',
+				fqqheadphoto:'',
+				groupheadphoto:'',	//群聊头像
+				fqq:'',
+				messages:[],
+				rName:'',
+				addName:'',
+				//菜单栏里面需要的sno
+				menu_sno:'',
+				//菜单栏里面需要的qq
+				menu_fqq:'',
+				flag:false,
+				Friend_menu_sno:''
+			},
+			methods: {
+				//刷新分组
+				freshFriend:function(){
+					//同时发送多个请求   函数存在数组中
+					axios.all([findSubgroup()])
+						.then(axios.spread((fn2) => {
+							this.subGroup=fn2.data;
+						}));
+				},
+				//添加分组
+				addGroup:function(){
+					$("#addGroupbox").css('display','block');
+				},
+				//重命名
+				RName:function(){
+					$("#rNamebox").css('display','block');
+				},
+				//删除分组
+				delGroup:function(){
+					$("#delGroupbox").css('display','block');
+				},
+				//展示好友信息
+				showFriendInfo:function(){
+					
+				},
+				//修改好友信息
+				modifySubGroup:function(){
+					$("#modifySubGroup").css('display','block');
+				},
+				//删除好友
+				delFriend:function(){
+					$("#delFriendbox").css('display','block');
+				},
+				//取消好友分组
+				cancleModifyFriend:function(){
+					$("#modifySubGroup").css('display','none');
+				},
+				//同意好友分组
+				agreeModifyFriend:function(){
+					if(this.Friend_menu_sno!=''){
+						axios({
+							url: 'friends.action',
+							method: 'post',
+							params: {
+								op:'changSubGroup',
+								sno:this.Friend_menu_sno,
+								fqq:this.menu_fqq
+							}
+						}).then(result => {
+							if(result.data==0) {
+								alert('修改好友分组失败！');
+							}else{
+								alert('修改好友分组成功！');
+								window.location.reload();
+							} 
+						});
+					}else{
+						alert('请选择组名');
+					}
+					
+				},
+				//取消删除好友
+				cancleDelFriend:function(){
+					$("#delFriendbox").css('display','none');
+				},
+				//同意删除好友
+				agreeDelFriend:function(){
+					if(this.menu_fqq!=''){
+						axios({
+							url: 'friend.action',
+							method: 'post',
+							params: {
+								op:'delFriend',
+								fqq:this.menu_fqq
+							}
+						}).then(result => {
+							if(result.data==0) {
+								alert('修改好友失败！');
+							}else{
+								alert('修改好友成功！');
+								window.location.reload();
+							} 
+						});
+					}
+					
+				},
+				//同意重命名
+				agreeRname:function(){
+					if(this.rName!=''){
+						axios({
+							url: 'groups.action',
+							method: 'post',
+							params: {
+								op:'Rname',
+								sname:this.rName,
+								sno:this.menu_sno
+							}
+						}).then(result => {
+							if(result.data==0) {
+								alert('修改分组名失败！');
+							}else{
+								alert('修改分组名成功！');
+								window.location.reload();
+							} 
+						});
+					}else{
+						alert('请输入组名');
+					}
+					
+				},
+				//取消重命名
+				cancleRname:function(){
+					$("#rNamebox").css('display','none');
+				},
+				
+				
+				
+				//同意添加分组
+				agreeAddGroup:function(){
+					if(this.addName!=''){
+						axios({
+							url: 'groups.action',
+							method: 'post',
+							params: {
+								op:'AddSubGroup',
+								sname:this.addName,
+								sno:this.menu_sno
+							}
+						}).then(result => {
+							if(result.data==0) {
+								alert('添加分组失败！');
+							}else{
+								alert('添加分组成功！');
+								window.location.reload();
+							} 
+						});
+					}else{
+						alert('请输入组名');
+					}
+					
+				},
+				//取消添加分组
+				cancleAddGroup:function(){
+					$("#addGroupbox").css('display','none');
+				},
+				
+				
+				//同意删除分组
+				agreeDelGroup:function(){
+					axios({
+						url: 'groups.action',
+						method: 'post',
+						params: {
+							op:'delSubGroup',
+							sno:this.menu_sno
+						}
+					}).then(result => {
+						if(result.data==0) {
+							alert('删除分组失败！');
+						}else{
+							alert('删除分组成功！');
+							window.location.reload();
+						} 
+					});
+					
+				},
+				//取消删除分组
+				cancleDelGroup:function(){
+					$("#delGroupbox").css('display','none');
+				},
+				
+				//右键显示分组菜单
+				showGMenu:function(event,s){
+					this.menu_sno=s.subgroup.sno;
+					//判断分组里面是否有好友，有的话删除分组不显示
+					if($.isEmptyObject(s.friends)){
+						$("#del_subgroup").css('display','block');
+					}else{
+						$("#del_subgroup").css('display','none');
+					}
+					//获取我们自定义的右键菜单
+					event.preventDefault();
+					var menu = document.querySelector("#group_menu");
+
+					//根据事件对象中鼠标点击的位置，进行定位
+					menu.style.left = event.clientX + 'px';
+					menu.style.top = event.clientY + 'px';
+
+					//改变自定义菜单的宽，让它显示出来
+					menu.style.display = 'block';
+				},
+				//右键显示好友菜单
+				showFMenu:function(event,f){
+					this.menu_fqq=f.fqq;
+					//获取我们自定义的右键菜单
+					event.preventDefault();
+					var menu = document.querySelector("#firend_menu");
+
+					//根据事件对象中鼠标点击的位置，进行定位
+					menu.style.left = event.clientX + 'px';
+					menu.style.top = event.clientY + 'px';
+
+					//改变自定义菜单的宽，让它显示出来
+					menu.style.display = 'block';
+				},
+				//发送消息
+				sendMsg:function(){
+					var content= $('#content').val();
+					var log ='';
+						if(content.indexOf('[*/')>=0){			//代表有表情
+							var arr = content.split('#');
+							for(var a=0;a<arr.length;a++){
+								if(arr[a].indexOf("\[\*\/qq")>=0){
+									arr[a] = arr[a].replace("[*/","<img src = 'images/emoji/").replace("_","/").replace("*/]",".gif' />");
+								}else{
+									arr[a] = arr[a].replace("[*/","<img src = 'images/emoji/").replace("_","/").replace("*/]",".png' />");
+								}
+								log+=arr[a];
+							}
+						content = log;
+					}
+					var obj={
+							m_id:null,
+							m_date:format(new Date(),'yyyy/MM/dd HH:mm:ss'),
+							m_qq:this.qq,
+							m_fqq:this.fqq,
+							m_content:content,
+							m_groupqq:this.groupno,
+							m_picture:null,
+							m_file:null,
+							isread:'0'
+						}
+					
+					
+					var str = JSON.stringify(obj);
+					//console.log(str+"111");
+					
+					ws.send(str);
+					console.log("发送消息成功！！");
+					$('#content').val("");
+					var c_html=$('#mCSB_1_container').html();
+					
+					//发送消息要拼接自己发送的消息
+					var output='<li class="msgright">'+
+					'<p class="msgcard">'+content+'</p>'+
+					'<img style="border-radius: 20px; vertical-align: middle; height:50px;width:50px;"'+
+					'src="'+this.qqheadphoto+'">'+
+					'<div style=" margin-left: 70px; font-size: 10px; margin-top: 5px;">'+
+					'<span style="color: #96A5B4;" >'+obj.m_date+'</span>'+
+					'</div> </li>';
+					var html_1 = c_html+output;
+				//	console.log(html_1);
+					$('#mCSB_1_container').html(html_1);
+					$('#center').mCustomScrollbar("scrollTo","bottom");
+					//吧消息设置已读
+				},
+				
+				//群聊
+				chatWithGroups:function(g){
+					this.groupno=g.gno;
+					this.fqq=null;
+					this.groupname = g.gname;
+					this.groupheadphoto=g.goupheadphoto;
+					console.log("当前的群聊号码为："+this.groupno+"  当前的fqq为："+this.fqq);
+					var html_1='<img style="border-radius: 20px; vertical-align: middle; height:50px;width:50px;"'+
+								'src="'+this.groupheadphoto+'"> <span'+
+								'style="margin-left: 20px;">'+this.groupname+'('+this.groupno+')</span> <i'+
+								'class="fas fa-ellipsis-v"'+
+								'style="font-size: 1.4em; position: absolute; right: 20px; color: gray;"></i>';
+					$('#top').html(html_1);
+					
+					//刷新群消息记录
+					checkChateGroupLog(this.qq,this.fqq,g.gno).then((fn)=>{
+						this.messages=fn.data;
+					});
+					this.findgrouphistory(this.messages);
+				},
+				//私聊  ，点击后要刷新右边的页面
+				chatWithFriend:function(fdata){
+					this.fqqNickName=fdata.nickname;
+					this.fqqheadphoto=fdata.headphoto;
+					this.fqq = fdata.fqq;
+					this.groupno =null;
+					
+					console.log("当前的群聊号码为："+this.groupno+"  当前的fqq为："+this.fqq);
+					var html_1=	'<img style="border-radius: 20px; vertical-align: middle; height:50px;width:50px;"'+
+						'src="'+this.fqqheadphoto+'"> <span'+
+						'style="margin-left: 20px;">'+this.fqqNickName+'('+this.fqq+')</span> <i'+
+						'class="fas fa-ellipsis-v"'+
+						'style="font-size: 1.4em; position: absolute; right: 20px; color: gray;"></i>';
+					$('#top').html(html_1);
+					//刷新消息记录
+					checkChateLog(this.qq,this.fqq,this.groupqq).then((fn)=>{
+						this.messages=fn.data;
+						//console.log(this.messages);
+					});
+					this.findfriendhistroy(this.messages);
+				}
+				,
+				show:function(event){
+					var el=event.currentTarget;
+					
+					if(this.flag){
+						
+						$(el).next().css("display","none");
+						this.flag=false;
+					}else{
+						$(el).next().css("display","block");
+						this.flag=true;
+					}
+					
+					
+				},
+			
+				showFriend:function(){
+					$("#groups").css("display","none");
+					$("#friends").css("display","block");
+					
+				},
+				showGroup:function(){
+					$("#friends").css("display","none");
+					$("#groups").css("display","block");
+				},
+				//找朋友的历史消息
+				findfriendhistroy:function(data){
+					$('#mCSB_1_container').html('')
+					var length = this.messages.length-1;
+					for(var index in this.messages){
+						//console.log(this.messages[index]);
+						if(this.messages[index].m_content.indexOf('https://test.mizuhokaga.top/')>=0){
+							continue;
+						}
+						else if(this.messages[index].m_fqq===this.qq){//查询我发出去的
+							
+						    var	output='<li class="msgleft"><img '+
+										'style="border-radius: 20px; vertical-align: middle ;height:50px;widhth:50px;"'+
+										'src="'+this.fqqheadphoto+'">'+
+										'<p class="msgcard">'+this.messages[index].m_content+'</p>'+
+										'<div style=" margin-left: 70px; font-size: 10px; margin-top: 5px;">'+
+										'<span style="color: #96A5B4;" >'+this.messages[index].m_date+'</span>'+
+										'</div> </li>';
+							var html_1=$('#mCSB_1_container').html()+output;
+							$('#mCSB_1_container').html(html_1);
+							$('#center').mCustomScrollbar("scrollTo","bottom");
+							//把消息该为已读
+							
+							
+						}	
+						else{//查询对方发给我的
+							
+							var output='<li class="msgright">'+
+										'<p class="msgcard">'+this.messages[index].m_content+'</p><img '+
+										'style="border-radius: 20px; vertical-align: middle;height:50px;widhth:50px;"'+
+										'src="'+this.qqheadphoto+'"></li>'+
+										'<div style=" margin-right: 70px; font-size: 10px;float:right">'+
+										'<span style="color: #96A5B4;" >'+this.messages[index].m_date+'</span>'+
+										'</div></li>';	
+							var html_1=$('#mCSB_1_container').html()+output;
+							$('#mCSB_1_container').html(html_1);
+							$('#center').mCustomScrollbar("scrollTo","bottom");
+							//把消息该为已读
+							if(index === length &&this.messages[index].isread==='0'){
+								console.log(this.qq,this.fqq);
+								readMsg(this.qq,this.fqq,this.groupno);
+								console.log('修改已读成功！！');
+								return;
+							}
+						}
+					}
+				},
+				//视频通话
+				shipingtonghua:function(qq,fqq,fqqNickName){
+					var flag = confirm('确定视频与进行视频通话吗？PS（注意事项）:可能不能进行视频通话，因为我们用的服务器是免费的stun服务器而且服务器是谷歌提供的，有时候不能视频通话,聊天步骤：直接把链接发给您的好友就行了（因为这个视频聊天时放在另外一个服务器上面的所以）');
+					if(flag===true){
+						
+						var qq =this.qq;
+						var fqq = this.fqq;
+						window.open("https://test.mizuhokaga.top?qq="+qq+"&fqq="+fqq);
+						//定时器查询视频通话记录
+						setTimeout('checkshiping('+qq+','+fqq+')',5000);
+						return;
+					}else{
+						return;
+					}
+				},
+				
+				//找群的历史消息
+				findgrouphistory:function(data){
+					$('#mCSB_1_container').html('')
+					console.log(data);
+					for(var index in this.messages){
+						//console.log(this.messages[index]);
+						if(this.messages[index].qq===this.qq){//查询我发出去的
+						    var	output='<li class="msgright">'+
+										'<p class="msgcard">'+this.messages[index].content+'</p>'+	
+						   				'<img '+
+										'style="border-radius: 20px; vertical-align: middle;height:50px;widhth:50px;"'+
+										'src="'+this.qqheadphoto+'">'+
+										'<div style=" margin-right: 70px; font-size: 10px; margin-top: 5px;">'+
+										'<span style="color: #96A5B4;" >'+this.messages[index].date+'</span>'+
+										'</div>'+
+										'</li>';
+										
+							var html_1=$('#mCSB_1_container').html()+output;
+							$('#mCSB_1_container').html(html_1);
+							$('#center').mCustomScrollbar("scrollTo","bottom");
+						}	
+						else if(this.messages[index].qq!=this.qq){//查询对方发给我的
+							var output='<li class="msgleft">'+
+										'<div style=" margin-left: 60px; font-size: 10px;">'+
+										'<span style="color: #96A5B4;" margin-left:10px;>'+this.messages[index].nickname+'</span></div>'+
+										'<img '+
+										'style="border-radius: 20px; vertical-align: middle;height:50px;widhth:50px;"'+
+										'src="'+this.messages[index].headphoto+'">'+
+										'<p class="msgcard">'+this.messages[index].content+'</p>'+
+										'<div style=" margin-left: 70px; font-size: 10px; margin-top: 5px;"><span style="color: #96A5B4;" >'+this.messages[index].date+'</span>'+
+										'</div></li>';
+							var html_1=$('#mCSB_1_container').html()+output;
+							$('#mCSB_1_container').html(html_1);
+							$('#center').mCustomScrollbar("scrollTo","bottom");
+							//把消息该为已读
+							console.log(this.messages[index]);
+							if(index===length&&this.messages[index].isread==='0'){
+								console.log(this.qq,this.fqq);
+								readMsg(this.qq,this.fqq,this.groupno);
+								console.log('修改已读成功！！');
+								return;
+							}
+						}
+					}
+				}
+			},
+			mounted: function() {
+				//同时发送多个请求   函数存在数组中
+				axios.all([checkLogin(),findSubgroup(),findGroups()])
+					.then(axios.spread((fn1,fn2,fn3) => {
+						this.onlogin = true;
+						this.nickname = fn1.data.nickname;
+						this.qq = fn1.data.qq; //将登录用户的QQ号存储在qq中
+						this.qqheadphoto = fn1.data.headphoto;
+						this.subGroup=fn2.data;
+						this.groups=fn3.data;//1111111111111
+					//	console.log(fn3.data);
+						target="ws://localhost:8080/webQQ02/ChatSocket?qq="+this.qq		//这里要改地址
+								
+					}));
+			}
+			
+
+		})
+ 		
+ 		
+ 		//群聊记录
+ 		function checkChateGroupLog(qq,fqq,groupqq){
+ 			return axios.get('message.action?op=checkChateGroupLog&gourpqq='+groupqq);
+ 		}
+ 		
+ 		//查看消息记录
+ 		function checkChateLog(qq,fqq,groupqq){
+ 			return axios.get('message.action?op=checkChatLog&qq='+qq+'&fqq='+fqq+'&gourpqq='+groupqq);
+ 		}
+ 		
+ 		
+		function checkLogin() {
+				return axios.get('qqinfo.action?op=check');
+		}
+		function findSubgroup(){
+			return axios.get('friends.action?op=find');
+		}
+		
+		function findGroups(){
+			return axios.get('groups.action?op=find');
+		}
+		//将消息设置为已读
+		function readMsg(qq,fqq,groupqq){
+			console.log(qq+'~~~~~'+fqq+'~~~'+groupqq);
+			return axios.get('message.action?op=read&qq='+qq+'&fqq='+fqq+'&groupqq='+groupqq);
+		}
+		
+		
+		$(function(){
+			setTimeout('inti()',1000);
+			console.log('打开websocket成功！');
+		})
+		
+		
+		function inti(){
+			 if ('WebSocket' in window) {
+	                ws = new WebSocket(target);
+	            } else if ('MozWebSocket' in window) {
+	                ws = new MozWebSocket(target);
+	            } else {
+	                alert('WebSocket is not supported by this browser.');
+	                return;
+	            }
+			//ws.onopen
+			//ws.onclose
+			ws.onmessage	=function(event){
+				eval(" var msg ="+event.data);
+				//console.log(event.data);		///得到消息发送的消息
+				console.log(msg);
+				
+				if(msg.m_content.indexOf('https://test.mizuhokaga.top/')>=0){
+					var flag = confirm('你收到聊天视频的通话是否要接受？？？？？');
+					if(flag===true){
+						window.open(msg.m_content);
+						return;
+					}else{
+						return;
+					}
+				}
+				
+				
+				if(vm.fqq===msg.m_qq){			//私聊接受到发过来的消息则自动拼接
+					 var	output='<li class="msgleft"><img '+
+						'style="border-radius: 20px; vertical-align: middle ;height:50px;widhth:50px;"'+
+						'src="'+vm.fqqheadphoto+'">'+
+						'<p class="msgcard">'+msg.m_content+'</p>'+
+						'<div style=" margin-left: 70px; font-size: 10px; margin-top: 5px;">'+
+						'<span style="color: #96A5B4;" >'+msg.m_date+'</span>'+
+						'</div> </li>';
+					 var html_1=$('#mCSB_1_container').html()+output;
+					 $('#mCSB_1_container').html(html_1);
+					 $('#mCSB_1_container').mCustomScrollbar("scrollTo","bottom");
+					 //TODO:要把消息改成为已读
+				}
+				else if(vm.groupno===msg.m_groupqq){	//群聊
+					if(msg.m_qq===vm.qq){			//接受到自己的消息 已经拼接了 只要处理其他人发的消息就行了
+						return;
+					}
+					var output='<li class="msgleft">'+
+					'<div style=" margin-left: 60px; font-size: 10px;">'+
+					'<span style="color: #96A5B4;" margin-left:10px;>'+msg.nickName+'</span></div>'+
+					'<img '+
+					'style="border-radius: 20px; vertical-align: middle;height:50px;widhth:50px;"'+
+					'src="'+msg.headphoto+'">'+
+					'<p class="msgcard">'+msg.m_content+'</p>'+
+					'<div style=" margin-left: 70px; font-size: 10px; margin-top: 5px;"><span style="color: #96A5B4;" >'+msg.m_date+'</span>'+
+					'</div></li>';
+					 var html_1=$('#mCSB_1_container').html()+output;
+					 $('#mCSB_1_container').html(html_1);
+					 $('#mCSB_1_container').mCustomScrollbar("scrollTo","bottom");
+					 //TODO:要把消息改成为已读
+				}
+			}
+			
+		}
+		
+		var format = function(time, format) {   //前台获取时间，转化为国际时间，可以当做工具使用
+		    var t = new Date(time);
+		    var tf = function(i){return (i < 10 ? '0' : "") + i};
+		    return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function(a){
+		        switch(a){
+		            case 'yyyy':
+		                return tf(t.getFullYear());
+		                break;
+		            case 'MM':
+		                return tf(t.getMonth() + 1);
+		                break;
+		            case 'mm':
+		                return tf(t.getMinutes());
+		                break;
+		            case 'dd':
+		                return tf(t.getDate());
+		                break;
+		            case 'HH':
+		                return tf(t.getHours());
+		                break;
+		            case 'ss':
+		                return tf(t.getSeconds());
+		                break;
+		        }
+		    })
+		}
+		//解析表情
+		function parseemj(content){
+			$("#content").emojiParse({
+			    basePath: 'images/emoji',
+			    icons: emojiLists // 注：详见 js/emoji.list.js
+			  });
+		}
+		//视频通话记录
+		function checkshiping(qq,fqq){
+	
+			/* axios.get('message.action?op=checkChatLog&qq='+qq+'&fqq='+fqq).then((fn1)=>{
+				console.log(fn1.data);
+				var list = fn1.data;
+				for(var i =fn1.data.length-1;i>=0;i--){
+					if(list[i].m_content.indexOf('https://test.mizuhokaga.top/')>=0){
+						var str = JSON.stringify(list[i]);
+						ws.send(str);
+						return;
+					}
+				}
+			}); */
+			var index = $('#p').html();
+			alert(index);
+		}
+		//关闭右键菜单，很简单
+		window.onclick = function(e) {
+
+			//用户触发click事件就可以关闭了，因为绑定在window上，按事件冒泡处理，不会影响菜单的功能
+			document.querySelector('#group_menu').style.display = 'none';　　　　
+			document.querySelector('#firend_menu').style.display = 'none';
+		}
+	</script>

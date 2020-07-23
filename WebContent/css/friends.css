@@ -1,0 +1,256 @@
+/*
+	Author: Wang https://blog.csdn.net/q475254344
+	Last Modified: 2018/5/15
+*/
+* {
+	padding: 0px;
+	margin: 0px;
+}
+
+li {
+	list-style: none;
+}
+
+input {
+	border-radius: 5px;
+}
+
+.friendsbox {
+	margin: auto;
+	height: 100%;
+	width: 100%;
+	box-shadow: 0 0 0 1px gray;
+	display: flex;
+}
+
+.friendsleft {
+	background-color: #ffffff;
+	width: 25%;
+	left: 0;
+	height: 100%;
+}
+
+.friendsleft .top {
+	height: 8%;
+	width: 100%;
+	color: grey;
+	background-color: #F7F9F9;
+	display: flex;
+	align-items: center;
+	padding-left: 20px;
+}
+
+.friendsleft .top1 {
+	height: 12%;
+	width: 100%;
+	color: grey;
+	background-color: gainsboro;
+	display: flex;
+	align-items: center;
+}
+
+.friendsleft .top1 li {
+	text-align: center;
+	width: 50%;
+	height: 100%;
+	font-size: 40px;
+	line-height: 100px;
+}
+
+.friendsleft .top1 li:hover {
+	background: with;
+}
+
+.searchbtn {
+	height: 36px;
+	width: 36px;
+	border-radius: 18px;
+	background-color: #1f94bf;
+	color: #ECF0F1;
+	margin-left: 10px;
+}
+
+.searchbtn:hover {
+	cursor: pointer;
+}
+
+.friendsleft .center {
+	overflow-y: scroll;
+	height: 80%;
+}
+
+.friendsleft .center ul {
+	padding-left: 20px;
+}
+
+.friendsleft .center li {
+	margin: 20px;
+}
+
+.friendsleft .center li:hover {
+	font-size: 20px;
+	color: midnightblue;
+}
+
+.friendsleft .center .group {
+	margin: 10px 20px;
+	padding-left: 30px;
+	font-size: 20px;
+	color: midnightblue;
+	background: #edf5f8;
+	display: block;
+	height: 40px;
+	line-height: 40px;
+	border-radius: 13px;
+	font-weight: bold;
+	font-family: Times, TimesNR, 'New Century Schoolbook', Georgia,
+		'New York', serif;
+}
+
+.char_top {
+	height: 10%;
+	display: flex;
+	align-items: center;
+	padding-left: 30px;
+}
+
+.char_center {
+	background-color: #edf5f8;
+	height: 65%;
+	overflow-y: scroll;
+}
+
+.char_center ul {
+	padding: 10px;
+}
+
+.char_center li {
+	margin: 10px;
+	width: 100%;
+}
+
+.char_center p {
+	display: inline-block;
+}
+
+.msgcard {
+	margin: 0 10px 0 10px;
+	background-color: white;
+	border-radius: 10px;
+	padding: 10px;
+	max-width: 60%;
+}
+
+.msgleft {
+	float: left;
+	text-align: left;
+}
+
+.msgright {
+	text-align: right;
+	float: right;
+}
+
+.top {
+	height: 10%;
+	display: flex;
+	align-items: center;
+	padding-left: 30px;
+}
+
+.char_footer {
+	height: 25%;
+	background-color: #FBFCFC;
+	text-align: right;
+}
+
+.sendbtn {
+	height: 40px;
+	width: 80px;
+	border-radius: 10px;
+	background-color: #58D68D;
+	color: white;
+	font-weight: bold;
+	margin: 10px 20px 0 0;
+}
+/* <!--右键菜单栏（隐藏）--> */
+.Fmenu {
+	background: #CCCCCC;
+	width: 125;
+	/*设置为0 隐藏自定义菜单*/
+	height: 125px;
+	overflow: hidden;
+	/*隐藏溢出的元素*/
+	box-shadow: 0 1px 1px #888, 1px 0 1px #ccc;
+	position: absolute;
+	display: none;
+	/*自定义菜单相对与body元素进行定位*/
+}
+
+.menu {
+	font:;
+	width: 130px;
+	height: 25px;
+	line-height: 25px;
+	padding: 0 10px;
+}
+
+#cs {
+	background: orange;
+	width: 100px;
+	height: 50px;
+}
+
+/* 重命名分组输入框 */
+.modifybox{
+	background-color: whitesmoke;
+	width: 300px;
+	height: 130px;
+	border-width: 1px;
+	border-color: grey;
+	border-style: solid;
+	border-radius: 20px;
+	text-align: center;
+	display: none;
+	position: absolute;
+	left: 120px;
+	top: 300px;
+}
+
+.box_input{
+	border-radius: 10px;
+	float: left;
+	width: 250px;
+	height: 30px;
+	margin-left: 25px;
+	margin-right: 25px;
+	margin-top: 20px;
+}
+
+.box_but1{
+	background: #58D68D;
+	float: left;
+	width: 60px;
+	height: 30px;
+	border-radius: 10px;
+	margin-top: 30px;
+	margin-left: 25px;
+}
+
+.box_but2{
+	background: #58D68D;
+	float: right;
+	width: 60px;
+	height: 30px;
+	border-radius: 10px;
+	margin-top: 30px;
+	margin-right: 25px;
+}
+/* 虚化背景 */
+.vacuityBG{
+	width:100px;
+	height:100px;
+	background: rgba(0,0,0,0.2);
+	
+}
+

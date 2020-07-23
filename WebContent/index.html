@@ -1,0 +1,203 @@
+<html>
+<head>
+<title>chat UI</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="author" content="https://blog.csdn.net/q475254344">
+<link href="css/index.css" rel="stylesheet">
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+	integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+	crossorigin="anonymous">
+</head>
+
+<body class="box">
+	<div id="app1">
+		<div class="leftbar">
+			<ul>
+				<li><img
+					style="border-radius: 100px; vertical-align: middle; width: 50px; height: 50px;"
+					onclick="change('detailmessage.html')" :src="qqinfo.headphoto" /></li>
+				<li><i class="fas fa-comments"
+					onclick="change('conversation.html')"></i><span id="news_redpoint"
+					class="redpoint"> {{news_num}} </span></li>
+				<li><i class="fas fa-user-circle"
+					onclick="change('friends.html')"></i></li>
+				<li><i class="fas fa-bell" onclick="change('notice.html')"></i><span
+					id="notice_redpoint" class="redpoint"> {{notice_num}} </span></li>
+				<li><i class="fas fa-user-plus"
+					onclick="change('findFriends.html')"></i></li>
+				<li><i class="fas fa-address-card"
+					onclick="change('detailmessage.html')"></i></li>
+				<li><i class="fas fa-power-off"
+					onclick="exit()"></i></li>
+			</ul>
+		</div>
+		<iframe src="friends.html" class="container" name="ifr1"
+			scrolling="yes"> </iframe>
+	</div>
+</body>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/slide.js"></script>
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/axios.js"></script>
+<script>
+var target;
+		function change(src){
+			$('.container').attr('src',src);
+		}
+		
+		var vm = new Vue({
+			el: '#app1',
+			data: {
+				onlogin:true,
+				notice_num:0,
+				news_num:0,
+				qqinfo:{},
+				qq:''
+			},
+			mounted: function() {
+				//同时发送多个请求   函数存在数组中
+				axios.all([checkLogin()])
+					.then(axios.spread((fn1) => {
+						if(fn1.data==null) { //用户登录
+							this.onlogin = false;
+							alert('请先登录');
+							window.location.href = 'login.html';
+						}else{
+							console.log(fn1.data);
+							this.qqinfo=fn1.data;
+							this.qq=fn1.data.qq;
+							this.onlogin = true;
+							target="ws://39.105.183.155:8080/WebQQ03/Message?qq="+this.qq		//这里要改地址
+							
+						}
+					}));
+				//计时器
+				var _this=this;
+				setTimeout(() => {
+					//查找消息数
+					axios.get('message.action?op=findUnread&qq='+this.qq)
+			        .then(function (response) {
+			            var num=response.data;
+			            
+			            _this.news_num=num;
+			            if(_this.news_num!=0){
+			            	$('#news_redpoint').css('display','inline-block');
+			            }else{
+			            	$('#news_redpoint').css('display','none');
+			            }			         			   
+			        });
+					
+					
+					
+					axios.get('qqinfo.action?op=findDisAgree')
+			        .then(function (response) {
+			            var data=response.data;
+			            var num=0
+		            	for(var i=0;i<data.length;i++){
+		            		if(data[i].isagree==4){
+		            			num++;
+		            		}
+		            	}
+			            _this.notice_num=num;
+			            if(_this.notice_num!=0){
+			            	$('#notice_redpoint').css('display','inline-block');
+			            }else{
+			            	$('#notice_redpoint').css('display','none');
+			            }			         			   
+			            	
+			           
+			            
+			        });
+				},500)
+				
+			
+			}
+		});
+		function checkLogin() {
+			return axios.get('qqinfo.action?op=check');
+		};
+		function findDisagreeFriend(){
+			return axios.get('qqinfo.action?op=findDisAgree');
+		};
+		function exit(){
+			axios.get('qqinfo.action?op=exit');
+			vm.onlogin = false;
+			vm.qqinfo=null;
+			window.location.href='login.html';
+		}
+		
+		$(function(){
+			setTimeout('inti()',1000);
+			
+		})
+		function inti(){
+			 if ('WebSocket' in window) {
+	                ws = new WebSocket(target);
+	            } else if ('MozWebSocket' in window) {
+	                ws = new MozWebSocket(target);
+	            } else {
+	                alert('WebSocket is not supported by this browser.');
+	                return;
+	            }
+			 console.log('打开websocket成功！');
+			//ws.onopen
+			//ws.onclose
+			ws.onmessage=function(event){
+				eval(" var msg ="+event.data);
+				//console.log(event.data);		///得到消息发送的消息
+				console.log(msg);
+				if(msg==='addFriend'){
+					vm.notice_num++;
+					console.log(vm.notice_num);
+				}else if(msg==='RemoveFriend'){
+					vm.notice_num++;
+					console.log(vm.notice_num);
+				}
+				
+				
+			}
+			
+		}
+		function fresh(){
+			//查找消息数
+			axios.get('message.action?op=findUnread&qq='+vm.qq)
+	        .then(function (response) {
+	            var num=response.data;
+	            
+	            vm.news_num=num;
+	            if(vm.news_num!=0){
+	            	$('#news_redpoint').css('display','inline-block');
+	            }else{
+	            	$('#news_redpoint').css('display','none');
+	            }			         			   
+	        });
+			
+			
+			
+			axios.get('qqinfo.action?op=findDisAgree')
+	        .then(function (response) {
+	            var data=response.data;
+	            var num=0
+	            if(data===null || data.length ===null || data=== undefined){
+	            	return;
+	            }
+            	for(var i=0;i<data.length;i++){
+            		if(data[i].isagree==4){
+            			num++;
+            		}
+            	}
+	            vm.notice_num=num;
+	            if(vm.notice_num!=0){
+	            	$('#notice_redpoint').css('display','inline-block');
+	            }else{
+	            	$('#notice_redpoint').css('display','none');
+	            }			         			   
+	            	
+	           
+	            
+	        });
+		}
+	</script>
+</html>

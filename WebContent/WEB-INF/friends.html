@@ -1,0 +1,433 @@
+<link rel="stylesheet" href="css/friends.css" />
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+	integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+	crossorigin="anonymous">
+<div class="friendsbox" id="app">
+
+	<!--重命名分组框（隐藏）-->
+	<div id="rNamebox" class="modifybox">
+		<input class="box_input" type="text"  placeholder="请输入分组名"
+			v-model="rName" />
+		<button class="box_but1"  @click="cancleRname">取消</button>
+		<button class="box_but2" @click="agreeRname">确定</button>
+	</div>
+	<!--添加分组框（隐藏）-->
+	<div id="addGroupbox" class="modifybox">
+		<input type="text" class="box_input"  placeholder="请输入分组名"
+			v-model="addName" />
+		<button class="box_but1" @click="cancleAddGroup">取消</button>
+		<button class="box_but2" @click="agreeAddGroup">确定</button>
+	</div>
+	<!--删除分组框（隐藏）-->
+	<div id="delGroupbox" class="modifybox">
+		<span class="box_input" style=""></span>
+		<button class="box_but1" @click="cancleDelGroup">取消</button>
+		<button class="box_but2" @click="agreeDelGroup">确定</button>
+	</div>
+
+	<!--分组右键菜单栏（隐藏）-->
+	<div id="">
+		<!-- 		<div id="cs" oncontextmenu="myFunction(event)"></div> -->
+		<div class="Fmenu" id="group_menu">
+			<div class="menu" @click="freshFriend">刷新好友列表</div>
+			<div class="menu" @click="addGroup">添加分组</div>
+			<div class="menu" @click="RName">重命名</div>
+			<div class="menu" id="del_subgroup" @click="delGroup">删除分组</div>
+		</div>
+	</div>
+	<!--好友右键菜单栏（隐藏）-->
+	<div id="">
+		<!-- 		<div id="cs" oncontextmenu="myFunction(event)"></div> -->
+		<div class="Fmenu" id="firend_menu">
+			<div class="menu" @click="showFriendInfo">查看好友信息</div>
+			<div class="menu" @click="modifySubGroup">修改好友分组</div>
+			<div class="menu"  @click="delFriend">删除好友</div>
+		</div>
+	</div>
+	<!--修改好友分组框（隐藏）-->
+	<div id="modifySubGroup" class="modifybox">
+		<select class="box_input" id="groupselect" v-model="Friend_menu_sno">
+			 <option v-for="s in subGroup"  :value="s.subgroup.sno">{{s.subgroup.sname}}</option>
+		</select>
+		<button class="box_but1" @click="cancleModifyFriend">取消</button>
+		<button class="box_but2" @click="agreeModifyFriend">确定</button>
+	</div>
+	<!--删除好友框（隐藏）-->
+	<div id="delFriendbox" class="modifybox">
+		<span class="box_input" style=""></span>
+		<button class="box_but1" @click="cancleDelFriend">取消</button>
+		<button class="box_but2" @click="agreeDelFriend">确定</button>
+	</div>
+
+	<div class="friendsleft">
+		<div class="top1">
+			<!--  @click="showfriend"  @click="showgroup-->
+			<li><i class="fas fa-user" @click="showFriend()"></i></li>
+			<li><i class="fas fa-users" @click="showGroup()"></i></li>
+		</div>
+		<div class="top">
+			<i class="fas fa-bars" style="font-size: 1.4em"></i> <input
+				type="text" placeholder="search"
+				style="width: 300px; height: 36px; margin-left: 25px;">
+			<button class="searchbtn">
+				</style>
+				<i class="fas fa-search"></i>
+			</button>
+		</div>
+
+		<div class="center" id="center1">
+			<ul v-for="s in subGroup" id="friend">
+				<span class="group" style="margin-left: 10px;"
+					v-on:contextmenu.self="showGMenu($event,s)" @click="show($event)">{{s.subgroup.sname}}
+				</span>
+				<div style="display: none;">
+					<li v-for="f in s.friends" v-on:contextmenu.self="showFMenu($event,f)"><img
+						style="border-radius: 20px; vertical-align: middle; height: 50px; width: 50px;"
+						:src="f.headphoto"  > <span style="margin-left: 10px;">{{f.nickname}}</span>
+					</li>
+				</div>
+			</ul>
+		</div>
+		<div class="center" id="center2" style="display: none;">
+			<div>
+				<li v-for="g in groups"><img
+					style="border-radius: 20px; vertical-align: middle; height: 50px; width: 50px;":src="g.headphoto">
+					<span style="margin-left: 10px;">{{g.gname}}</span></li>
+			</div>
+		</div>
+	</div>
+	<!-- 聊天框 -->
+	<div>
+		<div class="char_top">
+			<img style="border-radius: 20px; vertical-align: middle;"
+				src="http://placehold.it/40x40"> <span
+				style="margin-left: 20px;">Barack Obama</span> <i
+				class="fas fa-ellipsis-v"
+				style="font-size: 1.4em; position: absolute; right: 20px; color: gray;"></i>
+		</div>
+		<div class="char_center">
+			<ul>
+				<li class="msgleft"><img
+					style="border-radius: 20px; vertical-align: top;"
+					src="http://placehold.it/40x40">
+					<p class="msgcard">This message on the left!</p></li>
+				<li class="msgright">
+					<p class="msgcard">This message on the right!</p> <img
+					style="border-radius: 20px; vertical-align: top;"
+					src="http://placehold.it/40x40">
+				</li>
+				<li class="msgleft"><img
+					style="border-radius: 20px; vertical-align: top;"
+					src="http://placehold.it/40x40">
+					<p class="msgcard">This is a long message! This is a long
+						message! This is a long left message!</p></li>
+				<li class="msgright">
+					<p class="msgcard">This message on the right!</p> <img
+					style="border-radius: 20px; vertical-align: top;"
+					src="http://placehold.it/40x40">
+
+				</li>
+				<li class="msgleft"><img
+					style="border-radius: 20px; vertical-align: top;"
+					src="http://placehold.it/40x40">
+					<p class="msgcard">This is a long message! This is a long
+						message! This is a long left message!</p></li>
+			</ul>
+		</div>
+		<div class="char_footer">
+			<textarea maxlength="800" rows="5" cols="40"
+				style="width: 100%; height: 70%; resize: none; border: none;"
+				placeholder="请在此输入要发送的内容..."></textarea>
+			<button class="sendbtn">发送</button>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/slide.js"></script>
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/axios.js"></script>
+<script>
+ 		var vm = new Vue({
+			el: '#app',
+			data: {
+				rName:'',
+				addName:'',
+				//菜单栏里面需要的sno
+				menu_sno:'',
+				//菜单栏里面需要的qq
+				menu_fqq:'',
+				flag:false,
+				subGroup:{},
+				qq: '',
+				nickname:'',				
+				groups: {},
+				Friend_menu_sno:''
+			},
+			methods: {
+				//刷新分组
+				freshFriend:function(){
+					//同时发送多个请求   函数存在数组中
+					axios.all([findSubgroup()])
+						.then(axios.spread((fn2) => {
+							this.subGroup=fn2.data;
+						}));
+				},
+				//添加分组
+				addGroup:function(){
+					$("#addGroupbox").css('display','block');
+				},
+				//重命名
+				RName:function(){
+					$("#rNamebox").css('display','block');
+				},
+				//删除分组
+				delGroup:function(){
+					$("#delGroupbox").css('display','block');
+				},
+				//展示好友信息
+				showFriendInfo:function(){
+					
+				},
+				//修改好友信息
+				modifySubGroup:function(){
+					$("#modifySubGroup").css('display','block');
+				},
+				//删除好友
+				delFriend:function(){
+					$("#delFriendbox").css('display','block');
+				},
+				//取消好友分组
+				cancleModifyFriend:function(){
+					$("#modifySubGroup").css('display','none');
+				},
+				//同意好友分组
+				agreeModifyFriend:function(){
+					if(this.Friend_menu_sno!=''){
+						axios({
+							url: 'friends.action',
+							method: 'post',
+							params: {
+								op:'changSubGroup',
+								sno:this.Friend_menu_sno,
+								fqq:this.menu_fqq
+							}
+						}).then(result => {
+							if(result.data==0) {
+								alert('修改好友分组失败！');
+							}else{
+								alert('修改好友分组成功！');
+								window.location.reload();
+							} 
+						});
+					}else{
+						alert('请选择组名');
+					}
+					
+				},
+				//取消删除好友
+				cancleDelFriend:function(){
+					$("#delFriendbox").css('display','none');
+				},
+				//同意删除好友
+				agreeDelFriend:function(){
+					if(this.menu_fqq!=''){
+						axios({
+							url: 'friend.action',
+							method: 'post',
+							params: {
+								op:'delFriend',
+								fqq:this.menu_fqq
+							}
+						}).then(result => {
+							if(result.data==0) {
+								alert('修改好友失败！');
+							}else{
+								alert('修改好友成功！');
+								window.location.reload();
+							} 
+						});
+					}
+					
+				},
+				//同意重命名
+				agreeRname:function(){
+					if(this.rName!=''){
+						axios({
+							url: 'groups.action',
+							method: 'post',
+							params: {
+								op:'Rname',
+								sname:this.rName,
+								sno:this.menu_sno
+							}
+						}).then(result => {
+							if(result.data==0) {
+								alert('修改分组名失败！');
+							}else{
+								alert('修改分组名成功！');
+								window.location.reload();
+							} 
+						});
+					}else{
+						alert('请输入组名');
+					}
+					
+				},
+				//取消重命名
+				cancleRname:function(){
+					$("#rNamebox").css('display','none');
+				},
+				
+				
+				
+				//同意添加分组
+				agreeAddGroup:function(){
+					if(this.addName!=''){
+						axios({
+							url: 'groups.action',
+							method: 'post',
+							params: {
+								op:'AddSubGroup',
+								sname:this.addName,
+								sno:this.menu_sno
+							}
+						}).then(result => {
+							if(result.data==0) {
+								alert('添加分组失败！');
+							}else{
+								alert('添加分组成功！');
+								window.location.reload();
+							} 
+						});
+					}else{
+						alert('请输入组名');
+					}
+					
+				},
+				//取消添加分组
+				cancleAddGroup:function(){
+					$("#addGroupbox").css('display','none');
+				},
+				
+				
+				//同意删除分组
+				agreeDelGroup:function(){
+					axios({
+						url: 'groups.action',
+						method: 'post',
+						params: {
+							op:'delSubGroup',
+							sno:this.menu_sno
+						}
+					}).then(result => {
+						if(result.data==0) {
+							alert('删除分组失败！');
+						}else{
+							alert('删除分组成功！');
+							window.location.reload();
+						} 
+					});
+					
+				},
+				//取消删除分组
+				cancleDelGroup:function(){
+					$("#delGroupbox").css('display','none');
+				},
+				
+				//右键显示分组菜单
+				showGMenu:function(event,s){
+					this.menu_sno=s.subgroup.sno;
+					//判断分组里面是否有好友，有的话删除分组不显示
+					if($.isEmptyObject(s.friends)){
+						$("#del_subgroup").css('display','block');
+					}else{
+						$("#del_subgroup").css('display','none');
+					}
+					//获取我们自定义的右键菜单
+					event.preventDefault();
+					var menu = document.querySelector("#group_menu");
+
+					//根据事件对象中鼠标点击的位置，进行定位
+					menu.style.left = event.clientX + 'px';
+					menu.style.top = event.clientY + 'px';
+
+					//改变自定义菜单的宽，让它显示出来
+					menu.style.display = 'block';
+				},
+				//右键显示好友菜单
+				showFMenu:function(event,f){
+					this.menu_fqq=f.fqq;
+					//获取我们自定义的右键菜单
+					event.preventDefault();
+					var menu = document.querySelector("#firend_menu");
+
+					//根据事件对象中鼠标点击的位置，进行定位
+					menu.style.left = event.clientX + 'px';
+					menu.style.top = event.clientY + 'px';
+
+					//改变自定义菜单的宽，让它显示出来
+					menu.style.display = 'block';
+				},
+				
+				
+				show:function(event){
+					var el=event.currentTarget;
+					
+					if(this.flag){
+						$(el).next().css("display","none");
+						this.flag=false;
+					}else{
+						console.log($(el).next());
+						$(el).next().css("display","block");
+						this.flag=true;
+					}
+					
+					
+				},
+			
+				showFriend:function(){
+					$("#center2").css("display","none");
+					$("#center1").css("display","block");
+					
+				},
+				showGroup:function(){
+					$("#center1").css("display","none");
+					$("#center2").css("display","block");
+				}	
+			},
+			mounted: function() {
+				//同时发送多个请求   函数存在数组中
+				axios.all([checkLogin(),findSubgroup(),findGroups()])
+					.then(axios.spread((fn1,fn2,fn3,fn4) => {
+						this.onlogin = true;
+						this.nickname = fn1.data.nickname;
+						this.qq = fn1.data.qq; //将登录用户的QQ号存储在qq中
+						this.subGroup=fn2.data;
+						this.groups=fn3.data;
+					}));
+			}
+			
+
+		})
+		function checkLogin() {
+				return axios.get('qqinfo.action?op=check');
+		}
+		function findSubgroup(){
+			return axios.get('friends.action?op=find');
+		}
+		
+		function findGroups(){
+			return axios.get('groups.action?op=find');
+		}
+		
+		//关闭右键菜单，很简单
+		window.onclick = function(e) {
+
+			//用户触发click事件就可以关闭了，因为绑定在window上，按事件冒泡处理，不会影响菜单的功能
+			document.querySelector('#group_menu').style.display = 'none';　　　　
+			document.querySelector('#firend_menu').style.display = 'none';
+		}
+		
+	</script>
